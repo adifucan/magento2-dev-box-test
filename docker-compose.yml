@@ -13,7 +13,7 @@ db:
 web:
   build: web
   volumes:
-    - /Users/etulika/Projects/php/magento2:/var/www/magento2
+    - magento2:/var/www/magento2
   ports:
     - "1748:80"
   links:
