@@ -1,0 +1,7 @@
+## Magento 2 Application with Docker Compose for developers
+
+1. Retrieve Magento source code: composer create-project --repository-url="https://repo.magento.com/" magento/project-community-edition magento2 
+2. Clone this repository && cd magento2-dev-box
+3. docker compose up
+4. Navigate to http://localhost:1748 and install Magento
+
