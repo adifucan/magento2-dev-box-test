@@ -27,7 +27,6 @@ RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 
 # Magento installation
 ADD auth.json /root/.composer/auth.json
-RUN cd /var/www/magento2 && composer create-project --repository-url="https://repo.magento.com/" magento/project-community-edition .
 
 EXPOSE 80
 CMD ["apache2-foreground"]
