@@ -4,6 +4,8 @@
 # Docker Compose defines required services and attach them together through aliases
 ##
 db:
+  container_name: magento2-devbox-db
+  restart: always
   image: mysql:5.6
   ports:
     - "3306:3306"
@@ -12,10 +14,11 @@ db:
     - MYSQL_DATABASE=magento2
 web:
   build: web
+  container_name: magento2-devbox-web
   volumes:
-    - /Users/etulika/Projects/php/magento2:/var/www/magento2
+    - ..\magento2:/var/www/magento2
   ports:
     - "1748:80"
   links:
-    - db
+    - db:db
   command: "apache2-foreground"
