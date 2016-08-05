@@ -7,4 +7,5 @@ Run PowerShell as administrator and give permission to run scripts with command:
 ## Installation (Windows 10)
 1. Clone this repository && cd magento2-dev-box
 2. & ".\install.ps1" - during command execution you will be asked for your magento repo credentials
-3. Navigate to [http://localhost:1748](http://localhost:1748) and install Magento (use "db" as database host)
+3. & ".\deploy.ps1" 
+4. Navigate to [http://localhost:1748](http://localhost:1748) and install Magento (use "db" as database host)
