@@ -25,8 +25,5 @@ RUN a2enmod rewrite
 ADD default.conf /etc/apache2/sites-enabled/default.conf
 RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 
-# Magento installation
-ADD auth.json /root/.composer/auth.json
-
 EXPOSE 80
 CMD ["apache2-foreground"]
