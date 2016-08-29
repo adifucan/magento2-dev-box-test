@@ -16,7 +16,7 @@ web:
   build: web
   container_name: magento2-devbox-web
   volumes:
-    - ../okapis2ce:/var/www/magento2
+    - ./shared/webroot:/var/www/magento2
     - ./shared/.composer:/root/.composer
     - ./shared/.ssh:/root/.ssh
     - ./scripts:/root/scripts

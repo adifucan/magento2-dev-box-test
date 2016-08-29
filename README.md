@@ -1,7 +1,7 @@
 # Magento 2 Application with Docker Compose for developers
 
 ## Prerequisites
-Docker (https://www.docker.com/products/docker#/windows) and git (https://git-scm.com/download/win) for windows should be installed.
+Docker (https://www.docker.com/products/docker#/windows) for windows should be installed.
 Run PowerShell as administrator and give permission to run scripts with command: `Set-ExecutionPolicy Unrestricted`
 
 ## Installation (Windows 10)

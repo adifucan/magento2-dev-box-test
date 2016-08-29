@@ -33,7 +33,7 @@ if (!file_exists($fileName)) {
     file_put_contents($fileName, $auth_json);
 }
 
-if (!file_exists('/var/www/magento2')) {
+if (!file_exists('/var/www/magento2/composer.json')) {
     `cd /var/www && composer create-project --repository-url=""https://repo.magento.com/"" magento/project-community-edition magento2`;
 } else {
     `cd /var/www/magento2 && composer install`;
