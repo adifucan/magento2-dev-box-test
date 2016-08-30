@@ -7,7 +7,8 @@
 FROM php:7.0.9-apache
 MAINTAINER "Oleksandr Iegorov <oiegorov@magento.com>"
 
-RUN  apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y \
+    apt-utils \
     curl \
     libmcrypt-dev \
     libicu-dev \
@@ -15,20 +16,24 @@ RUN  apt-get update && apt-get install -y \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng12-dev \
-    cron \
+    git \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) mcrypt intl xsl gd zip pdo_mysql \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && docker-php-ext-install opcache \
+    && pecl install xdebug && docker-php-ext-enable xdebug
+
+RUN apt-get clean && apt-get update && apt-get install -y nodejs \
+    && ln -s /usr/bin/nodejs /usr/bin/node
+
+RUN apt-get clean && apt-get update && apt-get install -y npm \
+    && npm update -g npm && npm install -g grunt-cli && npm install -g gulp
 
 RUN a2enmod rewrite
-RUN service cron restart
 
 # Site config
 ADD default.conf /etc/apache2/sites-enabled/default.conf
 RUN rm -f /etc/apache2/sites-enabled/000-default.conf
-
-# PHP config
-ADD php.ini /usr/local/etc/php
 
 EXPOSE 80
 CMD ["apache2-foreground"]
