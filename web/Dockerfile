@@ -27,5 +27,8 @@ RUN service cron restart
 ADD default.conf /etc/apache2/sites-enabled/default.conf
 RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 
+# PHP config
+ADD php.ini /usr/local/etc/php
+
 EXPOSE 80
 CMD ["apache2-foreground"]

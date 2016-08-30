@@ -34,7 +34,7 @@ if (!file_exists($fileName)) {
 }
 
 if (!file_exists('/var/www/magento2/composer.json')) {
-    `cd /var/www && composer create-project --repository-url=""https://repo.magento.com/"" magento/project-community-edition magento2`;
+    passthru('cd /var/www && composer create-project --repository-url=""https://repo.magento.com/"" magento/project-community-edition magento2');
 } else {
-    `cd /var/www/magento2 && composer install`;
+    passthru('cd /var/www/magento2 && composer install');
 }
