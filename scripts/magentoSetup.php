@@ -6,6 +6,13 @@ function readValue($defaultValue = null)
     return $input ?: $defaultValue;
 }
 
+function readBooleanValue($defaultValue = null)
+{
+    $input = trim(fgets(STDIN));
+
+    return strlen($input) || !is_bool($defaultValue) ? (strtolower($input) === 'y' ? true : false) : $defaultValue;
+}
+
 $adminPath = 'admin';
 echo 'Please enter backend admin path (', $adminPath , '): ';
 $adminPath = readValue($adminPath);
@@ -15,6 +22,8 @@ $adminUserName = readValue($adminUserName);
 $adminPassword = '123123q';
 echo 'Please enter admin password (', $adminPassword , '): ';
 $adminPassword = readValue($adminPassword);
+echo 'Do you want to install Sample Data? Y/n: ';
+$installSampleData = readBooleanValue();
 
 $cmd = 'cd /var/www/magento2 && php bin/magento setup:install';
 $cmd .= ' --base-url=http://localhost:1748/ --db-host=db --db-name=magento2';
@@ -23,4 +32,8 @@ $cmd .= ' --admin-email=user@example.com --admin-user=' . $adminUserName . ' --a
 $cmd .= ' --language=en_US --currency=USD --timezone=America/Chicago --use-rewrites=1';
 $cmd .= ' --backend-frontname=' . $adminPath;
 
-system($cmd);
+passthru($cmd);
+
+if ($installSampleData) {
+    passthru('cd /var/www/magento2 && php bin/magento sampledata:deploy');
+}
