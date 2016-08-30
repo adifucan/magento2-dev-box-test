@@ -52,5 +52,6 @@ docker-compose up --build -d
 
 docker exec -it --privileged magento2-devbox-web php /root/scripts/composerInstall.php
 docker exec -it --privileged magento2-devbox-web php /root/scripts/magentoSetup.php
+docker exec -it --privileged magento2-devbox-web /bin/bash /root/scripts/postInstall.sh
 
 

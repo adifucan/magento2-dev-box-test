@@ -23,4 +23,4 @@ $cmd .= ' --admin-email=user@example.com --admin-user=' . $adminUserName . ' --a
 $cmd .= ' --language=en_US --currency=USD --timezone=America/Chicago --use-rewrites=1';
 $cmd .= ' --backend-frontname=' . $adminPath;
 
-echo shell_exec($cmd);
+system($cmd);
