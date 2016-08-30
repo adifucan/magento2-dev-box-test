@@ -15,6 +15,8 @@ db:
   environment:
     - MYSQL_ROOT_PASSWORD=root
     - MYSQL_DATABASE=magento2
+  volumes:
+    - ./shared/db:/var/lib/mysql
 web:
   build: web
   container_name: magento2-devbox-web
@@ -44,6 +46,9 @@ if ((Test-Path shared/.ssh) -eq 0) {
 }
 if ((Test-Path shared/webroot) -eq 0) {
     mkdir shared/webroot
+}
+if ((Test-Path shared/db) -eq 0) {
+    mkdir shared/db
 }
 
 Write-Host "Build docker images"

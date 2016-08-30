@@ -17,6 +17,8 @@ db:
   environment:
     - MYSQL_ROOT_PASSWORD=root
     - MYSQL_DATABASE=magento2
+  volumes:
+    - ./shared/db:/var/lib/mysql
 web:
   build: web
   container_name: magento2-devbox-web
@@ -37,6 +39,7 @@ echo "Creating shared folders"
 mkdir -p shared/.composer
 mkdir -p shared/.ssh
 mkdir -p shared/webroot
+mkdir -p shared/db
 
 echo 'Build docker images'
 
