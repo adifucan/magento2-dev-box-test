@@ -23,7 +23,15 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install -j$(nproc) mcrypt intl xsl gd zip pdo_mysql opcache \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && docker-php-ext-install opcache \
-    && pecl install xdebug && docker-php-ext-enable xdebug
+    && pecl install xdebug && docker-php-ext-enable xdebug \
+    && echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_port=9000" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.profiler_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_connect_back=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_handler=dbgp" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_autostart=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.idekey=PHPSTORM" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.max_nesting_level=1000" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 RUN apt-get clean && apt-get update && apt-get install -y nodejs \
     && ln -s /usr/bin/nodejs /usr/bin/node
@@ -45,5 +53,5 @@ RUN curl -sS https://accounts.magento.cloud/cli/installer | php
 ENV PATH /root/.magento-cloud/bin:$PATH
 WORKDIR /var/www/magento2
 
-EXPOSE 80
+EXPOSE 9000 80
 CMD ["apache2-foreground"]
