@@ -22,7 +22,7 @@ $adminUserName = readValue($adminUserName);
 $adminPassword = '123123q';
 echo 'Please enter admin password (', $adminPassword , '): ';
 $adminPassword = readValue($adminPassword);
-echo 'Do you want to install Sample Data? Y/n: ';
+echo 'Do you want to install Sample Data? y/N: ';
 $installSampleData = readBooleanValue();
 
 $cmd = 'cd /var/www/magento2 && php bin/magento setup:install';
@@ -34,7 +34,9 @@ $cmd .= ' --backend-frontname=' . $adminPath;
 
 passthru($cmd);
 
-mkdir('/var/www/magento2/var/composer_home', 0777, true);
+if (!file_exists('/var/www/magento2/var/composer_home')) {
+    mkdir('/var/www/magento2/var/composer_home', 0777, true);
+}
 copy('/root/.composer/auth.json', '/var/www/magento2/var/composer_home/auth.json');
 
 if ($installSampleData) {
