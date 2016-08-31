@@ -24,6 +24,7 @@ web:
     - ./shared/webroot:/var/www/magento2
     - ./shared/.composer:/root/.composer
     - ./shared/.ssh:/root/.ssh
+    #    - ./shared/.magento-cloud:/root/.magento-cloud
     - ./scripts:/root/scripts
   ports:
     - "1748:80"
