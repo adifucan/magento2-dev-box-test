@@ -4,7 +4,7 @@
 $fileName = '/root/.composer/auth.json';
 passthru('echo $PATH');
 exec('source /root/.bashrc');
-exec('magento-cloud');
+
 echo "Do you want to initialize from Magento Cloud? [yN]\n";
 $handle = fopen ("php://stdin","r");
 $line = fgets($handle);
@@ -16,6 +16,7 @@ if (strlen(trim($line)) > 0) {
 }
 
 if ($fromCloud) {
+    exec('magento-cloud');
     echo "What branch do you want to clone? [master]\n";
     $handle = fopen ("php://stdin","r");
     $line = fgets($handle);
