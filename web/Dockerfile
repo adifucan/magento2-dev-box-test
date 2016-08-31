@@ -9,6 +9,7 @@ MAINTAINER "Oleksandr Iegorov <oiegorov@magento.com>"
 
 RUN apt-get update && apt-get install -y \
     apt-utils \
+    cron \
     curl \
     libmcrypt-dev \
     libicu-dev \
@@ -34,6 +35,9 @@ RUN a2enmod rewrite
 # Site config
 ADD default.conf /etc/apache2/sites-enabled/default.conf
 RUN rm -f /etc/apache2/sites-enabled/000-default.conf
+
+# PHP config
+ADD php.ini /usr/local/etc/php
 
 EXPOSE 80
 CMD ["apache2-foreground"]
