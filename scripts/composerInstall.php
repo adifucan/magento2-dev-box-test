@@ -2,8 +2,6 @@
 <?php
 
 $fileName = '/root/.composer/auth.json';
-passthru('echo $PATH');
-exec('source /root/.bashrc');
 
 echo "Do you want to initialize from Magento Cloud? [yN]\n";
 $handle = fopen ("php://stdin","r");
@@ -83,7 +81,6 @@ if ($fromCloud) {
 
     chmod('/root/.ssh/' . $keyName, 0600);
     passthru('echo "IdentityFile /root/.ssh/' . $keyName . '" >> /etc/ssh/ssh_config');
-    passthru('ssh -v idymogyzqpche-master-7rqtwti@ssh.us.magentosite.cloud');
 
     echo "Do you want to add key to the Magento Cloud? [Yn]\n";
     $handle = fopen ("php://stdin","r");
@@ -96,6 +93,13 @@ if ($fromCloud) {
     }
     if ($addKeyToCloud) {
         exec('magento-cloud ssh-key:add /root/.ssh/' . $keyName . '.pub');
+    }
+
+    $result = shell_exec('ssh -q -o "BatchMode=yes" idymogyzqpche-master-7rqtwti@ssh.us.magentosite.cloud "echo 2>&1" && echo $host SSH_OK || echo $host SSH_NOK');
+    if (trim($result) == 'SSH_OK') {
+        echo "SSH connection with the Magento Cloud can be established\n";
+    } else {
+        throw new \Exception('You selected to init project from the Magento Cloud, but SSH connection cannot be established. Please start from the beginning.');
     }
 
     echo "Please select project to clone \n";

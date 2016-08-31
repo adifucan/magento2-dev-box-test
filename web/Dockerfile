@@ -51,7 +51,7 @@ ADD php.ini /usr/local/etc/php
 
 RUN curl -sS https://accounts.magento.cloud/cli/installer | php
 ENV PATH /root/.magento-cloud/bin:$PATH
-WORKDIR /var/www/magento2
+WORKDIR /root
 
 EXPOSE 9000 80
 CMD ["apache2-foreground"]
