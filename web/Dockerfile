@@ -17,7 +17,9 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng12-dev \
+    cron \
     git \
+    vim \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) mcrypt intl xsl gd zip pdo_mysql opcache \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -35,9 +37,14 @@ RUN a2enmod rewrite
 # Site config
 ADD default.conf /etc/apache2/sites-enabled/default.conf
 RUN rm -f /etc/apache2/sites-enabled/000-default.conf
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
 # PHP config
 ADD php.ini /usr/local/etc/php
+
+RUN curl -sS https://accounts.magento.cloud/cli/installer | php
+ENV PATH /root/.magento-cloud/bin:$PATH
+WORKDIR /var/www/magento2
 
 EXPOSE 80
 CMD ["apache2-foreground"]

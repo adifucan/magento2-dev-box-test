@@ -1,0 +1,10 @@
+{
+    "name": "magento/devbox-tools",
+    "description": "Tools to help setup and install application on developer's containers",
+    "type": "project",
+    "require": {
+        "symfony/console": "^3.1"
+    },
+    "license": "OSL-3.0",
+    "minimum-stability": "beta"
+}
