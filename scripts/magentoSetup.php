@@ -41,4 +41,5 @@ copy('/root/.composer/auth.json', '/var/www/magento2/var/composer_home/auth.json
 
 if ($installSampleData) {
     passthru('cd /var/www/magento2 && php bin/magento sampledata:deploy');
+    passthru('cd /var/www/magento2 && php bin/magento setup:upgrade');
 }
