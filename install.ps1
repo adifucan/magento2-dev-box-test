@@ -30,8 +30,23 @@ web:
     - "1748:80"
   links:
     - db:db
+    - rabbit:rabbit
   command: "apache2-foreground"
 "@
+
+$install_rabbitmq = Read-Host 'Do you wish to install RabbitMQ (y/N)'
+
+if ($install_rabbitmq -eq 'y') {
+$yml += @"
+
+rabbit:
+  container_name: magento2-devbox-rabbit
+  image: rabbitmq:3-management
+  ports:
+    - "8282:15672"
+    - "5672:5672"
+"@
+}
 
 Set-Content docker-compose.yml $yml
 
@@ -54,8 +69,8 @@ if ((Test-Path shared/db) -eq 0) {
 
 Write-Host "Build docker images"
 
-docker-compose up --build -d
+#docker-compose up --build -d
 
-docker exec -it --privileged magento2-devbox-web php /root/scripts/composerInstall.php
-docker exec -it --privileged magento2-devbox-web php /root/scripts/magentoSetup.php
-docker exec -it --privileged magento2-devbox-web php /root/scripts/postInstall.php
+#docker exec -it --privileged magento2-devbox-web php /root/scripts/composerInstall.php
+#docker exec -it --privileged magento2-devbox-web php /root/scripts/magentoSetup.php
+#docker exec -it --privileged magento2-devbox-web php /root/scripts/postInstall.php

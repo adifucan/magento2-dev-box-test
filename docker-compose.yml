@@ -14,12 +14,6 @@ db:
     - MYSQL_DATABASE=magento2
   volumes:
     - ./shared/db:/var/lib/mysql
-rabbit:
-  container_name: magento2-devbox-rabbit
-  image: rabbitmq:3-management
-  ports:
-    - "8282:15672"
-    - "5672:5672" 
 web:
   build: web
   container_name: magento2-devbox-web
@@ -35,3 +29,9 @@ web:
     - db:db
     - rabbit:rabbit
   command: "apache2-foreground"
+#rabbit:
+#  container_name: magento2-devbox-rabbit
+#  image: rabbitmq:3-management
+#  ports:
+#    - "8282:15672"
+#    - "5672:5672"
