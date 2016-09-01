@@ -1,6 +1,12 @@
 #!/usr/bin/env php
 <?php
 
+function readValue($defaultValue = null)
+{
+    $input = rtrim(fgets(STDIN));
+    return $input ?: $defaultValue;
+}
+
 $fileName = '/root/.composer/auth.json';
 
 echo "Do you want to initialize from Magento Cloud? [yN]\n";
@@ -170,7 +176,12 @@ if (!file_exists($fileName)) {
 }
 
 if (!$fromCloud && !file_exists('/var/www/magento2/composer.json')) {
-    passthru('cd /var/www && composer create-project --repository-url=""https://repo.magento.com/"" magento/project-community-edition magento2');
+    echo 'Which version of Magento you want to be installed (please, choose CE or EE) [CE]:';
+    $version = strtoupper(readValue('CE')) == 'EE' ? 'enterprise' : 'community';
+
+    passthru(
+        'cd /var/www && composer create-project --repository-url=""https://repo.magento.com/"" magento/project-' . $version . '-edition magento2'
+    );
 } else {
     passthru('cd /var/www/magento2 && composer install');
 }

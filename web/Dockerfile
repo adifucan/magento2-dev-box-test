@@ -39,6 +39,8 @@ RUN apt-get clean && apt-get update && apt-get install -y nodejs \
 RUN apt-get clean && apt-get update && apt-get install -y npm \
     && npm update -g npm && npm install -g grunt-cli && npm install -g gulp
 
+RUN docker-php-ext-install bcmath
+
 RUN a2enmod rewrite
 
 # Site config
