@@ -21,9 +21,9 @@ db:
     - ./shared/db:/var/lib/mysql
 EOM
 
-read -p 'Do you wish to install RabbitMQ (y/N): ' install_rabbitmq
+read -p 'Do you wish to install RabbitMQ (y/N): ' $install_rabbitmq
 
-if [ $install_rabbitmq = 'y' ]
+if [[ $install_rabbitmq = 'y' ]]
     then
         cat << 'EOM' >> docker-compose.yml
 rabbit:
@@ -50,7 +50,7 @@ web:
     - db:db
 EOM
 
-if [ $install_rabbitmq = 'y' ]
+if [[ $install_rabbitmq = 'y' ]]
     then
         cat << 'EOM' >> docker-compose.yml
     - rabbit:rabbit
