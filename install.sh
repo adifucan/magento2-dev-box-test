@@ -21,7 +21,7 @@ db:
     - ./shared/db:/var/lib/mysql
 EOM
 
-read -p 'Do you wish to install RabbitMQ (y/N): ' $install_rabbitmq
+read -p 'Do you wish to install RabbitMQ (y/N): ' install_rabbitmq
 
 if [[ $install_rabbitmq = 'y' ]]
     then
