@@ -183,5 +183,5 @@ if (!$fromCloud && !file_exists('/var/www/magento2/composer.json')) {
         'cd /var/www && composer create-project --repository-url=""https://repo.magento.com/"" magento/project-' . $version . '-edition magento2'
     );
 } else {
-    passthru('cd /var/www/magento2 && composer install');
+    passthru('cd /var/www/magento2 && composer update');
 }
