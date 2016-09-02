@@ -44,12 +44,20 @@ web:
     - ./shared/.composer:/root/.composer
     - ./shared/.ssh:/root/.ssh
     #    - ./shared/.magento-cloud:/root/.magento-cloud
-    - ./scripts:/root/scripts
   ports:
     - "1748:80"
   links:
     - db:db
+EOM
+
+if [ $install_rabbitmq = 'y' ]
+    then
+        cat << 'EOM' >> docker-compose.yml
     - rabbit:rabbit
+EOM
+fi
+
+cat << 'EOM' >> docker-compose.yml
   command: "apache2-foreground"
 EOM
 

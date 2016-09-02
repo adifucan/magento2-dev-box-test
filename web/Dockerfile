@@ -51,6 +51,14 @@ RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 # PHP config
 ADD php.ini /usr/local/etc/php
 
+# Initial scripts
+ADD scripts/composer.json /root/scripts/composer.json
+ADD scripts/composer.lock /root/scripts/composer.lock
+ADD scripts/composerInstall.php /root/scripts/composerInstall.php
+ADD scripts/devbox /root/scripts/devbox
+ADD scripts/magentoSetup.php /root/scripts/magentoSetup.php
+ADD scripts/postInstall.php /root/scripts/postInstall.php
+
 RUN curl -sS https://accounts.magento.cloud/cli/installer | php
 ENV PATH /root/.magento-cloud/bin:$PATH
 WORKDIR /root

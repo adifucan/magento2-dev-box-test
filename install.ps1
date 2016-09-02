@@ -1,5 +1,7 @@
 Write-Host "Creating docker-compose config"
 
+$install_rabbitmq = Read-Host 'Do you wish to install RabbitMQ (y/N)'
+
 $yml = @"
 ##
 # Services needed to run Magento2 application on Docker
@@ -25,16 +27,23 @@ web:
     - ./shared/.composer:/root/.composer
     - ./shared/.ssh:/root/.ssh
     #    - ./shared/.magento-cloud:/root/.magento-cloud
-    - ./scripts:/root/scripts
   ports:
     - "1748:80"
   links:
     - db:db
-    - rabbit:rabbit
-  command: "apache2-foreground"
 "@
 
-$install_rabbitmq = Read-Host 'Do you wish to install RabbitMQ (y/N)'
+if ($install_rabbitmq -eq 'y') {
+$yml += @"
+
+    - rabbit:rabbit
+"@
+}
+
+$yml += @"
+
+  command: "apache2-foreground"
+"@
 
 if ($install_rabbitmq -eq 'y') {
 $yml += @"
