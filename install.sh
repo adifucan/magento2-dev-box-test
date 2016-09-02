@@ -2,7 +2,34 @@
 
 echo 'Creating docker-compose config'
 
-cat > docker-compose.yml <<- 'EOM'
+read -p 'Do you wish to install RabbitMQ (y/N): ' install_rabbitmq
+
+webroot_path="./shared/webroot"
+read -p 'Do you have existing copy of Magento 2 (y/N): ' yes_no
+if [[ $yes_no = 'y' ]]
+    then
+        read -p 'Please provide full path to the magento2 folder: ' webroot_path
+fi
+composer_path="./shared/.composer"
+read -p 'Do you have existing copy of .composer folder (y/N): ' yes_no
+if [[ $yes_no = 'y' ]]
+    then
+        read -p 'Please provide full path to the .composer folder: ' composer_path
+fi
+ssh_path="./shared/.ssh"
+read -p 'Do you have existing copy of .ssh folder (y/N): ' yes_no
+if [[ $yes_no = 'y' ]]
+    then
+        read -p 'Please provide full path to the .ssh folder: ' ssh_path
+fi
+db_path="./shared/webroot"
+read -p 'Do you have existing copy of the database files folder (y/N): ' yes_no
+if [[ $yes_no = 'y' ]]
+    then
+        read -p 'Please provide full path to the database files folder: ' db_path
+fi
+
+cat > docker-compose.yml <<- EOM
 ##
 # Services needed to run Magento2 application on Docker
 #
@@ -18,14 +45,12 @@ db:
     - MYSQL_ROOT_PASSWORD=root
     - MYSQL_DATABASE=magento2
   volumes:
-    - ./shared/db:/var/lib/mysql
+    - $db_path:/var/lib/mysql
 EOM
 
-read -p 'Do you wish to install RabbitMQ (y/N): ' install_rabbitmq
-
-if [ $install_rabbitmq = 'y' ]
+if [[ $install_rabbitmq = 'y' ]]
     then
-        cat << 'EOM' >> docker-compose.yml
+        cat << EOM >> docker-compose.yml
 rabbit:
   container_name: magento2-devbox-rabbit
   image: rabbitmq:3-management
@@ -35,14 +60,25 @@ rabbit:
 EOM
 fi
 
-cat << 'EOM' >> docker-compose.yml
+read -p 'Do you wish to install Redis (y/N): ' install_redis
+
+if [[ $install_redis = 'y' ]]
+    then
+        cat << EOM >> docker-compose.yml
+redis:
+  container_name: magento2-devbox-redis
+  image: redis:3.0.7
+EOM
+fi
+
+cat << EOM >> docker-compose.yml
 web:
   build: web
   container_name: magento2-devbox-web
   volumes:
-    - ./shared/webroot:/var/www/magento2
-    - ./shared/.composer:/root/.composer
-    - ./shared/.ssh:/root/.ssh
+    - $webroot_path:/var/www/magento2
+    - $composer_path:/root/.composer
+    - $ssh_path:/root/.ssh
     #    - ./shared/.magento-cloud:/root/.magento-cloud
   ports:
     - "1748:80"
@@ -50,10 +86,17 @@ web:
     - db:db
 EOM
 
-if [ $install_rabbitmq = 'y' ]
+if [[ $install_rabbitmq = 'y' ]]
     then
         cat << 'EOM' >> docker-compose.yml
     - rabbit:rabbit
+EOM
+fi
+
+if [[ $install_redis = 'y' ]]
+    then
+        cat << 'EOM' >> docker-compose.yml
+    - redis:redis
 EOM
 fi
 

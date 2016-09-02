@@ -21,3 +21,15 @@ Run PowerShell as administrator and give permission to run scripts with command:
    - Servers: {{your server name from step 1}}
    - Ide key: PHPSTORM
 3. Make sure that you have 9000 Xdebug port in Languages & Frameworks > PHP > Debug
+
+## Static content deploy
+To deploy static view files you need:
+- Enter docker container by running: `docker exec -it --privileged magento2-devbox-web /bin/bash`
+- Enter magento root: `cd \var\www\magento2`
+- Deploy static files: `php bin/magento -f setup:static-content:deploy`
+
+## Compile CSS styles with Grunt
+To compile CSS out of LESS via Grunt you need:
+- Enter docker container by running: `docker exec -it --privileged magento2-devbox-web /bin/bash`
+- Enter magento root: `cd \var\www\magento2`
+- Run: `npm install && grunt refresh`
