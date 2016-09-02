@@ -21,7 +21,7 @@ db:
     - ./shared/db:/var/lib/mysql
 EOM
 
-read -p 'Do you wish to install RabbitMQ (y/N): ' $install_rabbitmq
+read -p 'Do you wish to install RabbitMQ (y/N): ' install_rabbitmq
 
 if [[ $install_rabbitmq = 'y' ]]
     then
@@ -32,6 +32,17 @@ rabbit:
   ports:
     - "8282:15672"
     - "5672:5672" 
+EOM
+fi
+
+read -p 'Do you wish to install Redis (y/N): ' install_redis
+
+if [[ $install_redis = 'y' ]]
+    then
+        cat << 'EOM' >> docker-compose.yml
+redis:
+  container_name: magento2-devbox-redis
+  image: redis:3.0.7
 EOM
 fi
 
@@ -54,6 +65,13 @@ if [[ $install_rabbitmq = 'y' ]]
     then
         cat << 'EOM' >> docker-compose.yml
     - rabbit:rabbit
+EOM
+fi
+
+if [[ $install_redis = 'y' ]]
+    then
+        cat << 'EOM' >> docker-compose.yml
+    - redis:redis
 EOM
 fi
 
