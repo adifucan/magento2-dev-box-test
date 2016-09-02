@@ -27,7 +27,7 @@ web:
     - "1748:80"
   links:
     - db:db
-    - rabbit:rabbit
+#    - rabbit:rabbit
   command: "apache2-foreground"
 #rabbit:
 #  container_name: magento2-devbox-rabbit
