@@ -65,15 +65,12 @@ abstract class AbstractCommand extends Command
 
             if (!$this->getConfigValue('isInitial', $config, false)) {
                 $value = $value !== null ? $value : $this->getConfigValue('defaultValue', $config);
-
-                if ($this->getConfigValue('isBoolean', $config, false)) {
-                    $input->setOption(
-                        $name,
-                        preg_match(sprintf('~^%s~i', static::SYMBOL_BOOLEAN_TRUE), $value) ? true : false
-                    );
-                } else {
-                    $input->setOption($name, $value);
-                }
+                $input->setOption(
+                    $name,
+                    $this->getConfigValue('isBoolean', $config, false)
+                        ? preg_match(sprintf('~^%s~i', static::SYMBOL_BOOLEAN_TRUE), $value) ? true : false
+                        : $value
+                );
             }
         }
     }
