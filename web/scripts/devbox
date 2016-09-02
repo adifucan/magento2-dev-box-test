@@ -1,13 +1,20 @@
 #!/usr/bin/env php
 <?php
-// application.php
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+namespace MagentoDevBox;
 
-require __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/command/MagentoSetup.php';
 
 use Symfony\Component\Console\Application;
 
 $application = new Application();
-
-// ... register commands
-
+$application->addCommands(
+    [
+        new Command\MagentoSetup()
+    ]
+);
 $application->run();
