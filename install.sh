@@ -35,6 +35,17 @@ rabbit:
 EOM
 fi
 
+read -p 'Do you wish to install Redis (y/N): ' install_redis
+
+if [[ $install_redis = 'y' ]]
+    then
+        cat << 'EOM' >> docker-compose.yml
+redis:
+  container_name: magento2-devbox-redis
+  image: redis:3.0.7
+EOM
+fi
+
 cat << 'EOM' >> docker-compose.yml
 web:
   build: web
@@ -54,6 +65,13 @@ if [[ $install_rabbitmq = 'y' ]]
     then
         cat << 'EOM' >> docker-compose.yml
     - rabbit:rabbit
+EOM
+fi
+
+if [[ $install_redis = 'y' ]]
+    then
+        cat << 'EOM' >> docker-compose.yml
+    - redis:redis
 EOM
 fi
 
