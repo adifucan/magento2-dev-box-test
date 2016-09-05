@@ -76,7 +76,7 @@ fi
 read -p 'Do you wish to install Varnish (y/N): ' install_varnish
 
 web_port=1748
-if [[ $install_varnish= 'y' ]]
+if [[ $install_varnish = 'y' ]]
     then
         cat << EOM >> docker-compose.yml
   varnish:
