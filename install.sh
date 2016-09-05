@@ -73,6 +73,23 @@ if [[ $install_redis = 'y' ]]
 EOM
 fi
 
+read -p 'Do you wish to install Varnish (y/N): ' install_varnish
+
+web_port=1748
+if [[ $install_varnish= 'y' ]]
+    then
+        cat << EOM >> docker-compose.yml
+  varnish:
+    build: varnish
+    container_name: magento2-devbox-varnish
+    links:
+      - web:web
+    ports:
+      - "1748:6081"
+EOM
+web_port=1749
+fi
+
 cat << EOM >> docker-compose.yml
   web:
     build: web
@@ -83,7 +100,7 @@ cat << EOM >> docker-compose.yml
       - $ssh_path:/root/.ssh
       #    - ./shared/.magento-cloud:/root/.magento-cloud
     ports:
-      - "1748:80"
+      - "$web_port:80"
 EOM
 
 echo "Creating shared folders"
@@ -98,5 +115,6 @@ echo 'Build docker images'
 docker-compose up --build -d
 
 docker exec -it --privileged magento2-devbox-web php /root/scripts/composerInstall.php
-docker exec -it --privileged magento2-devbox-web php /root/scripts/magentoSetup.php --install-rabbitmq=$install_rabbitmq
+docker exec -it --privileged magento2-devbox-web php /root/scripts/magentoSetup.php \
+    --install-rabbitmq=$install_rabbitmq
 docker exec -it --privileged magento2-devbox-web php /root/scripts/postInstall.php

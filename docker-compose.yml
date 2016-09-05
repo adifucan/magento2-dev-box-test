@@ -25,6 +25,13 @@ services:
   redis:
     container_name: magento2-devbox-redis
     image: redis:3.0.7
+  varnish:
+    build: varnish
+    container_name: magento2-devbox-varnish
+    links:
+      - web:web
+    ports:
+      - "1748:6081"
   web:
     build: web
     container_name: magento2-devbox-web
@@ -35,4 +42,4 @@ services:
       #    - ./shared/.magento-cloud:/root/.magento-cloud
       - ./scripts:/root/scripts
     ports:
-      - "1748:80"
+      - "1749:80"
