@@ -35,28 +35,30 @@ cat > docker-compose.yml <<- EOM
 #
 # Docker Compose defines required services and attach them together through aliases
 ##
-db:
-  container_name: magento2-devbox-db
-  restart: always
-  image: mysql:5.6
-  ports:
-    - "1345:3306"
-  environment:
-    - MYSQL_ROOT_PASSWORD=root
-    - MYSQL_DATABASE=magento2
-  volumes:
-    - $db_path:/var/lib/mysql
+version: '2'
+services:
+  db:
+    container_name: magento2-devbox-db
+    restart: always
+    image: mysql:5.6
+    ports:
+      - "1345:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=magento2
+    volumes:
+      - $db_path:/var/lib/mysql
 EOM
 
 if [[ $install_rabbitmq = 'y' ]]
     then
         cat << EOM >> docker-compose.yml
-rabbit:
-  container_name: magento2-devbox-rabbit
-  image: rabbitmq:3-management
-  ports:
-    - "8282:15672"
-    - "5672:5672" 
+  rabbit:
+    container_name: magento2-devbox-rabbit
+    image: rabbitmq:3-management
+    ports:
+      - "8282:15672"
+      - "5672:5672"
 EOM
 fi
 
@@ -65,43 +67,23 @@ read -p 'Do you wish to install Redis (y/N): ' install_redis
 if [[ $install_redis = 'y' ]]
     then
         cat << EOM >> docker-compose.yml
-redis:
-  container_name: magento2-devbox-redis
-  image: redis:3.0.7
+  redis:
+    container_name: magento2-devbox-redis
+    image: redis:3.0.7
 EOM
 fi
 
 cat << EOM >> docker-compose.yml
-web:
-  build: web
-  container_name: magento2-devbox-web
-  volumes:
-    - $webroot_path:/var/www/magento2
-    - $composer_path:/root/.composer
-    - $ssh_path:/root/.ssh
-    #    - ./shared/.magento-cloud:/root/.magento-cloud
-  ports:
-    - "1748:80"
-  links:
-    - db:db
-EOM
-
-if [[ $install_rabbitmq = 'y' ]]
-    then
-        cat << 'EOM' >> docker-compose.yml
-    - rabbit:rabbit
-EOM
-fi
-
-if [[ $install_redis = 'y' ]]
-    then
-        cat << 'EOM' >> docker-compose.yml
-    - redis:redis
-EOM
-fi
-
-cat << 'EOM' >> docker-compose.yml
-  command: "apache2-foreground"
+  web:
+    build: web
+    container_name: magento2-devbox-web
+    volumes:
+      - $webroot_path:/var/www/magento2
+      - $composer_path:/root/.composer
+      - $ssh_path:/root/.ssh
+      #    - ./shared/.magento-cloud:/root/.magento-cloud
+    ports:
+      - "1748:80"
 EOM
 
 echo "Creating shared folders"
