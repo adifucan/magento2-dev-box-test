@@ -31,9 +31,9 @@ abstract class AbstractCommand extends Command
     const PARAMETER_BOOLEAN_TRUE_PATTERN = '~^(?:[1y]|yes|true)$~i';
     const QUESTION_SUFFIX = ': ';
     const OPTION_DEFAULT_OPENING = false;
+    const OPTION_DEFAULT_INTERACTIVE_ONLY = false;
     const OPTION_DEFAULT_BOOLEAN = false;
     const OPTION_DEFAULT_VALUE_REQUIRED = true;
-    const OPTION_DEFAULT_VERBOSE = true;
 
     /**
      * @var QuestionHelper
@@ -46,15 +46,17 @@ abstract class AbstractCommand extends Command
     protected function configure()
     {
         foreach($this->getOptionsConfig() as $name => $config) {
-            $this->addOption(
-                $name,
-                $this->getConfigValue('shortcut', $config),
-                $this->getConfigValue('valueRequired', $config, static::OPTION_DEFAULT_VALUE_REQUIRED)
-                    ? InputOption::VALUE_REQUIRED
-                    : InputOption::VALUE_OPTIONAL,
-                $this->getConfigValue('description', $config, ''),
-                $this->getConfigValue('default', $config)
-            );
+            if (!$this->getConfigValue('interactiveOnly', $config, static::OPTION_DEFAULT_INTERACTIVE_ONLY)) {
+                $this->addOption(
+                    $name,
+                    $this->getConfigValue('shortcut', $config),
+                    $this->getConfigValue('valueRequired', $config, static::OPTION_DEFAULT_VALUE_REQUIRED)
+                        ? InputOption::VALUE_REQUIRED
+                        : InputOption::VALUE_OPTIONAL,
+                    $this->getConfigValue('description', $config, ''),
+                    $this->getConfigValue('default', $config)
+                );
+            }
         }
     }
 
@@ -92,21 +94,34 @@ abstract class AbstractCommand extends Command
      * @param string $name
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return $this
+     * @param bool $overwrite
+     * @param string|null $question
+     * @return mixed
      * @throws \Exception
      */
-    protected function requestOption($name, InputInterface $input, OutputInterface $output)
-    {
+    protected function requestOption(
+        $name,
+        InputInterface $input,
+        OutputInterface $output,
+        $overwrite = false,
+        $question = null
+    ) {
         $config = $this->getConfigValue($name, $this->getOptionsConfig());
 
         if (!$config) {
             throw new \Exception(sprintf('Config for option "%s" does not exist!', $name));
         }
 
-        $question = $this->getConfigValue('question', $config);
+        $question = $question === null ? $this->getConfigValue('question', $config) : $question;
 
         if (!is_string($question)) {
             throw new \Exception(sprintf('Option "%s" has no question and cannot be set interactively!', $name));
+        }
+
+        $value = $input->getOption($name);
+
+        if ($value !== null && !$overwrite) {
+            return $value;
         }
 
         $isBoolean = $this->getConfigValue('boolean', $config, static::OPTION_DEFAULT_BOOLEAN);
@@ -137,14 +152,11 @@ abstract class AbstractCommand extends Command
         $question = $isBoolean
             ? new ConfirmationQuestion($question, $defaultValue, static::PARAMETER_BOOLEAN_TRUE_PATTERN)
             : new Question($question, $defaultValue);
-        $input->setOption($name, $this->getQuestionHelper()->ask($input, $output, $question));
-        $output->writeln(
-            $isBoolean
-                ? ($input->getOption($name) ? static::WORD_BOOLEAN_TRUE : static::WORD_BOOLEAN_FALSE)
-                : $input->getOption($name)
-        );
+        $value = $this->getQuestionHelper()->ask($input, $output, $question);
+        $input->setOption($name, $value);
+        $output->writeln($isBoolean ? ($value ? static::WORD_BOOLEAN_TRUE : static::WORD_BOOLEAN_FALSE) : $value);
 
-        return $this;
+        return $value;
     }
 
     /**
