@@ -49,7 +49,7 @@ class MagentoSetup extends AbstractCommand
                 . ' --amqp-password=guest';
         }
 
-        $this->shell($output, $command);
+        $this->executeCommands($command, $output);
 
         if (!file_exists('/var/www/magento2/var/composer_home')) {
             mkdir('/var/www/magento2/var/composer_home', 0777, true);
@@ -58,12 +58,12 @@ class MagentoSetup extends AbstractCommand
         copy('/root/.composer/auth.json', '/var/www/magento2/var/composer_home/auth.json');
 
         if ($input->getOption('install-sample-data')) {
-            $this->shell(
-                $output,
+            $this->executeCommands(
                 [
                     'cd /var/www/magento2 && php bin/magento sampledata:deploy',
                     'cd /var/www/magento2 && php bin/magento setup:upgrade'
-                ]
+                ],
+                $output
             );
         }
     }
@@ -75,35 +75,36 @@ class MagentoSetup extends AbstractCommand
     {
         return [
             'backend-path' => [
-                'isInitial' => true,
-                'defaultValue' => 'admin',
+                'opening' => true,
+                'default' => 'admin',
                 'description' => 'Magento backend path.',
                 'question' => 'Please enter backend admin path %default%'
             ],
             'admin-user' => [
-                'isInitial' => true,
-                'defaultValue' => 'admin',
+                'opening' => true,
+                'default' => 'admin',
                 'description' => 'Admin username.',
                 'question' => 'Please enter backend admin username %default%'
             ],
             'admin-password' => [
-                'isInitial' => true,
-                'defaultValue' => '123123q',
+                'opening' => true,
+                'default' => '123123q',
                 'description' => 'Admin password.',
                 'question' => 'Please enter backend admin password %default%'
             ],
             'install-sample-data' => [
-                'isInitial' => true,
-                'isBoolean' => true,
-                'defaultValue' => false,
+                'opening' => true,
+                'boolean' => true,
+                'default' => false,
                 'description' => 'Whether to install Sample Data.',
                 'question' => 'Do you want to install Sample Data? %default%'
             ],
             'install-rabbitmq' => [
-                'isRequired' => true,
-                'isBoolean' => true,
-                'defaultValue' => false,
-                'description' => 'Whether to install RabbitMQ.'
+                'opening' => true,
+                'boolean' => true,
+                'default' => false,
+                'description' => 'Whether to install RabbitMQ.',
+                'question' => 'Do you want to install RabbitMQ? %default%'
             ]
         ];
     }
