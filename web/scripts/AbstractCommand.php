@@ -3,7 +3,7 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace MagentoDevBox\Command;
+namespace MagentoDevBox;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,27 +18,57 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 abstract class AbstractCommand extends Command
 {
-    const SYMBOL_BOOLEAN_TRUE = 'y';
-    const SYMBOL_BOOLEAN_FALSE = 'n';
+    /**#@+
+     * Words and symbols
+     */
     const WORD_BOOLEAN_TRUE = 'yes';
     const WORD_BOOLEAN_FALSE = 'no';
+    const SYMBOL_BOOLEAN_TRUE = 'y';
+    const SYMBOL_BOOLEAN_FALSE = 'n';
+    /**#@-*/
+
+    /**#@+
+     * Question elements patterns
+     */
+    const QUESTION_PATTERN = '%message%: ';
+    const QUESTION_PATTERN_DEFAULT = '[default: %value%]';
+    const QUESTION_PATTERN_DEFAULT_BOOLEAN = '[%true%/%false%]';
+    /**#@-*/
+
+    /**#@+
+     * Question patterns placeholders
+     */
+    const QUESTION_PLACEHOLDER_MESSAGE = '%message%';
     const QUESTION_PLACEHOLDER_DEFAULT = '%default%';
     const QUESTION_PLACEHOLDER_DEFAULT_VALUE = '%value%';
     const QUESTION_PLACEHOLDER_BOOLEAN_TRUE = '%true%';
     const QUESTION_PLACEHOLDER_BOOLEAN_FALSE = '%false%';
-    const QUESTION_PATTERN_DEFAULT = '[default: %value%]';
-    const QUESTION_PATTERN_DEFAULT_BOOLEAN = '[%true%/%false%]';
-    const PARAMETER_BOOLEAN_TRUE_PATTERN = '~^(?:[1y]|yes|true)$~i';
-    const QUESTION_SUFFIX = ': ';
+    /**#@-*/
+
+    /**#@+
+     * Value matchers
+     */
+    const MATCHER_BOOLEAN_TRUE = '~^(?:[1y]|yes|true)$~i';
+    /**#@-*/
+
+    /**#@+
+     * Option defaults
+     */
     const OPTION_DEFAULT_OPENING = false;
     const OPTION_DEFAULT_INTERACTIVE_ONLY = false;
     const OPTION_DEFAULT_BOOLEAN = false;
     const OPTION_DEFAULT_VALUE_REQUIRED = true;
+    /**#@-*/
 
     /**
      * @var QuestionHelper
      */
     private $questionHelper;
+
+    /**
+     * @var array
+     */
+    private $valueSetStates = [];
 
     /**
      * {@inheritdoc}
@@ -66,10 +96,12 @@ abstract class AbstractCommand extends Command
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         foreach($this->getOptionsConfig() as $name => $config) {
-            if ($input->hasParameterOption('--' . $name)
-                && $this->getConfigValue('boolean', $config, static::OPTION_DEFAULT_BOOLEAN)
-            ) {
-                $input->setOption($name, $this->isTrue($input->getOption($name)));
+            if ($input->hasParameterOption('--' . $name)) {
+                $this->valueSetStates[$name] = true;
+
+                if ($this->getConfigValue('boolean', $config, static::OPTION_DEFAULT_BOOLEAN)) {
+                    $input->setOption($name, $this->isTrue($input->getOption($name)));
+                }
             }
         }
     }
@@ -118,10 +150,10 @@ abstract class AbstractCommand extends Command
             throw new \Exception(sprintf('Option "%s" has no question and cannot be set interactively!', $name));
         }
 
-        $value = $input->getOption($name);
+        $interactiveOnly = $this->getConfigValue('interactiveOnly', $config, static::OPTION_DEFAULT_INTERACTIVE_ONLY);
 
-        if ($value !== null && !$overwrite) {
-            return $value;
+        if ($this->getConfigValue($name, $this->valueSetStates, false) && !$overwrite && !$interactiveOnly) {
+            return $input->getOption($name);
         }
 
         $isBoolean = $this->getConfigValue('boolean', $config, static::OPTION_DEFAULT_BOOLEAN);
@@ -147,13 +179,18 @@ abstract class AbstractCommand extends Command
             );
         }
 
-        $question = str_replace(static::QUESTION_PLACEHOLDER_DEFAULT, $defaultValueString, $question)
-            . static::QUESTION_SUFFIX;
+        $question = str_replace(static::QUESTION_PLACEHOLDER_DEFAULT, $defaultValueString, $question);
+        $question = str_replace(static::QUESTION_PLACEHOLDER_MESSAGE, $question, static::QUESTION_PATTERN);
         $question = $isBoolean
-            ? new ConfirmationQuestion($question, $defaultValue, static::PARAMETER_BOOLEAN_TRUE_PATTERN)
+            ? new ConfirmationQuestion($question, $defaultValue, static::MATCHER_BOOLEAN_TRUE)
             : new Question($question, $defaultValue);
         $value = $this->getQuestionHelper()->ask($input, $output, $question);
-        $input->setOption($name, $value);
+
+        if (!$interactiveOnly) {
+            $input->setOption($name, $value);
+        }
+
+        $this->valueSetStates[$name] = true;
         $output->writeln($isBoolean ? ($value ? static::WORD_BOOLEAN_TRUE : static::WORD_BOOLEAN_FALSE) : $value);
 
         return $value;
@@ -204,7 +241,7 @@ abstract class AbstractCommand extends Command
      */
     protected function isTrue($string)
     {
-        return (bool)preg_match(static::PARAMETER_BOOLEAN_TRUE_PATTERN, $string);
+        return (bool)preg_match(static::MATCHER_BOOLEAN_TRUE, $string);
     }
 
     /**
@@ -226,5 +263,8 @@ abstract class AbstractCommand extends Command
      *
      * @return array
      */
-    protected abstract function getOptionsConfig();
+    protected function getOptionsConfig()
+    {
+        return [];
+    }
 }

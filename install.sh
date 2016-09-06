@@ -22,7 +22,7 @@ if [[ $yes_no = 'y' ]]
     then
         read -p 'Please provide full path to the .ssh folder: ' ssh_path
 fi
-db_path="./shared/webroot"
+db_path="./shared/db"
 read -p 'Do you have existing copy of the database files folder (y/N): ' yes_no
 if [[ $yes_no = 'y' ]]
     then
@@ -118,13 +118,15 @@ echo 'Build docker images'
 
 docker-compose up --build -d
 
-docker exec -it --privileged magento2-devbox-web php /root/scripts/composerInstall.php
-docker exec -it --privileged magento2-devbox-web php /root/scripts/magentoSetup.php \
-    --install-rabbitmq=$install_rabbitmq --rabbit-host=$rabit_host --rabbit-port=$rabbit_port
+docker exec -it --privileged magento2-devbox-web /bin/sh -c 'cd /root/scripts && composer install'
+docker exec -it --privileged magento2-devbox-web /bin/sh -c 'cd /root/scripts && composer update'
+
+docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:download
+docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:setup --install-rabbitmq=$install_rabbitmq --rabbit-host=$rabit_host --rabbit-port=$rabbit_port
 
 if [[ $install_redis ]]
     then docker exec -it --privileged magento2-devbox-web php /root/scripts/setupRedis.php \
         --redis-host=$redis_host --magento-path=$magento_path
 fi
 
-docker exec -it --privileged magento2-devbox-web php /root/scripts/postInstall.php
+docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:prepare

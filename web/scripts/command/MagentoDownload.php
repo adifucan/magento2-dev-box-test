@@ -5,24 +5,25 @@
  */
 namespace MagentoDevBox\Command;
 
-require_once __DIR__.'/AbstractCommand.php';
+require_once __DIR__ . '/../AbstractCommand.php';
 
+use MagentoDevBox\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Command for downloading sources with Composer
+ * Command for downloading Magento sources
  */
-class ComposerInstall extends AbstractCommand
+class MagentoDownload extends AbstractCommand
 {
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('composer:install')
-            ->setDescription('Download sources with Composer')
-            ->setHelp('This command allows you to download sources with Composer.');
+        $this->setName('magento:download')
+            ->setDescription('Download Magento sources')
+            ->setHelp('This command allows you to download Magento sources.');
 
         parent::configure();
     }
@@ -52,13 +53,14 @@ class ComposerInstall extends AbstractCommand
                 : 'community';
             $this->executeCommands(
                 sprintf(
-                    'cd /var/www && composer create-project --repository-url=""https://repo.magento.com/""'
-                        . ' magento/project-%s-edition magento2',
+                    'cd /var/www/magento2 && composer create-project --repository-url=""https://repo.magento.com/""'
+                        . ' magento/project-%s-edition .',
                     $version
                 ),
                 $output
             );
         } else {
+            $this->executeCommands('cd /var/www/magento2 && composer install', $output);
             $this->executeCommands('cd /var/www/magento2 && composer update', $output);
         }
     }

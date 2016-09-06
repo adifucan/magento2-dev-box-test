@@ -5,8 +5,9 @@
  */
 namespace MagentoDevBox\Command;
 
-require_once __DIR__.'/AbstractCommand.php';
+require_once __DIR__ . '/../AbstractCommand.php';
 
+use MagentoDevBox\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -101,6 +102,7 @@ class MagentoSetup extends AbstractCommand
             ],
             'install-rabbitmq' => [
                 'opening' => true,
+                'valueRequired' => false,
                 'boolean' => true,
                 'default' => false,
                 'description' => 'Whether to install RabbitMQ.',
