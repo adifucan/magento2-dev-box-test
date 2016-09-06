@@ -109,5 +109,5 @@ docker exec -it --privileged magento2-devbox-web /bin/sh -c 'cd /root/scripts &&
 docker exec -it --privileged magento2-devbox-web /bin/sh -c 'cd /root/scripts && composer update'
 
 docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:download
-docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:setup --install-rabbitmq=$install_rabbitmq
+docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq
 docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:prepare

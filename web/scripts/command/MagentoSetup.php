@@ -45,9 +45,16 @@ class MagentoSetup extends AbstractCommand
             $input->getOption('backend-path')
         );
 
-        if ($input->getOption('install-rabbitmq')) {
-            $command .= ' --amqp-virtualhost=/ --amqp-host=rabbit --amqp-port=5672 --amqp-user=guest'
-                . ' --amqp-password=guest';
+        if ($input->getOption('rabbitmq-install')) {
+            $rabbitmqHost = $this->requestOption('rabbitmq-host', $input, $output);
+            $rabbitmqPort = $this->requestOption('rabbitmq-port', $input, $output);
+
+            $command .= sprintf(
+                ' --amqp-virtualhost=/ --amqp-host=%s --amqp-port=%s --amqp-user=guest'
+                    . ' --amqp-password=guest',
+                $rabbitmqHost,
+                $rabbitmqPort
+            );
         }
 
         $this->executeCommands($command, $output);
@@ -100,13 +107,25 @@ class MagentoSetup extends AbstractCommand
                 'description' => 'Whether to install Sample Data.',
                 'question' => 'Do you want to install Sample Data? %default%'
             ],
-            'install-rabbitmq' => [
+            'rabbitmq-install' => [
                 'opening' => true,
                 'valueRequired' => false,
                 'boolean' => true,
                 'default' => false,
                 'description' => 'Whether to install RabbitMQ.',
                 'question' => 'Do you want to install RabbitMQ? %default%'
+            ],
+            'rabbitmq-host' => [
+                'valueRequired' => false,
+                'default' => 'rabbit',
+                'description' => 'RabbitMQ host.',
+                'question' => 'Please specify RabbitMQ host %default%'
+            ],
+            'rabbitmq-port' => [
+                'valueRequired' => false,
+                'default' => '5672',
+                'description' => 'RabbitMQ port.',
+                'question' => 'Please specify RabbitMQ port %default%'
             ]
         ];
     }

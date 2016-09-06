@@ -112,8 +112,9 @@ abstract class AbstractCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         foreach($this->getOptionsConfig() as $name => $config) {
-            if (!$input->hasParameterOption('--' . $name)
-                && $this->getConfigValue('opening', $config, static::OPTION_DEFAULT_OPENING)
+            if ($this->getConfigValue('opening', $config, static::OPTION_DEFAULT_OPENING)
+                && !$this->getConfigValue('interactiveOnly', $config, static::OPTION_DEFAULT_INTERACTIVE_ONLY)
+                && !$this->getConfigValue($name, $this->valueSetStates, false)
             ) {
                 $this->requestOption($name, $input, $output);
             }
