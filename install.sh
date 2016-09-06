@@ -64,7 +64,19 @@ if [[ $install_rabbitmq = 'y' ]]
 EOM
 fi
 
-read -p 'Do you wish to install Redis (y/N): ' install_redis
+read -p 'Do you wish to setup Redis as session storage (y/N): ' redis_session
+read -p 'Do you wish to setup Redis (r) or Varnish (v) as page cache mechanism (any key for default file system storage) (r/v): ' cache_adapter
+
+redis_cache=0
+if [[ $cache_adapter = 'v' ]]
+    then
+        install_varnish='y'
+        redis_cache=1
+fi
+
+if [[ $cache_adapter = 'r' ]] || [[ $redis_session = 'y' ]]
+    then install_redis='y'
+fi
 
 redis_host='redis'
 if [[ $install_redis = 'y' ]]
@@ -75,8 +87,6 @@ if [[ $install_redis = 'y' ]]
     image: redis:3.0.7
 EOM
 fi
-
-read -p 'Do you wish to install Varnish (y/N): ' install_varnish
 
 web_port=1748
 if [[ $install_varnish = 'y' ]]
@@ -126,7 +136,8 @@ docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox mag
 
 if [[ $install_redis ]]
     then docker exec -it --privileged magento2-devbox-web php /root/scripts/setupRedis.php \
-        --redis-host=$redis_host --magento-path=$magento_path
+        --redis-host=$redis_host --magento-path=$magento_path --as-cache=$redis_cache \
+        --as-session=$redis_session
 fi
 
 docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:prepare
