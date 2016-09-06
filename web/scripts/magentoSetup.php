@@ -3,7 +3,9 @@
 $options = getopt(
     '',
     [
-        'install-rabbitmq::'
+        'install-rabbitmq::',
+        'rabbit-host::',
+        'rabbit-port::'
     ]
 );
 
@@ -38,8 +40,9 @@ $cmd .= ' --db-user=root --db-password=root --admin-firstname=Magento --admin-la
 $cmd .= ' --admin-email=user@example.com --admin-user=' . $adminUserName . ' --admin-password=' . $adminPassword;
 $cmd .= ' --language=en_US --currency=USD --timezone=America/Chicago --use-rewrites=1';
 $cmd .= ' --backend-frontname=' . $adminPath;
-if ($options['install-rabbitmq'] === 'y') {
-    $cmd .= ' --amqp-virtualhost=/ --amqp-host=rabbit --amqp-port=5672 --amqp-user=guest --amqp-password=guest ';
+if ($options['install-rabbitmq'] === 'y' && !empty($options['rabbit-host']) && !empty($options['rabbit-port'])) {
+    $cmd .= ' --amqp-virtualhost=/ --amqp-host=' . $options['rabbit-host']
+        . ' --amqp-port=' . $options['rabbit-port'] . ' --amqp-user=guest --amqp-password=guest ';
 }
 
 echo $cmd . "\n";

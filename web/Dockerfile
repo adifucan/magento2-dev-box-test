@@ -56,6 +56,7 @@ ADD scripts/composerInstall.php /root/scripts/composerInstall.php
 ADD scripts/devbox /root/scripts/devbox
 ADD scripts/magentoSetup.php /root/scripts/magentoSetup.php
 ADD scripts/postInstall.php /root/scripts/postInstall.php
+ADD scripts/setupRedis.php /root/scripts/setupRedis.php
 
 RUN curl -sS https://accounts.magento.cloud/cli/installer | php
 ENV PATH /root/.magento-cloud/bin:$PATH

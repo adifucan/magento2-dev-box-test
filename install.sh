@@ -50,24 +50,27 @@ services:
       - $db_path:/var/lib/mysql
 EOM
 
+rabbit_host='rabbit'
+rabbit_port=5672
 if [[ $install_rabbitmq = 'y' ]]
     then
         cat << EOM >> docker-compose.yml
-  rabbit:
+  $rabbit_host:
     container_name: magento2-devbox-rabbit
     image: rabbitmq:3-management
     ports:
       - "8282:15672"
-      - "5672:5672"
+      - "$rabbit_port:$rabbit_port"
 EOM
 fi
 
 read -p 'Do you wish to install Redis (y/N): ' install_redis
 
+redis_host='redis'
 if [[ $install_redis = 'y' ]]
     then
         cat << EOM >> docker-compose.yml
-  redis:
+  $redis_host:
     container_name: magento2-devbox-redis
     image: redis:3.0.7
 EOM
@@ -90,12 +93,13 @@ EOM
 web_port=1749
 fi
 
+magento_path='/var/www/magento2'
 cat << EOM >> docker-compose.yml
   web:
     build: web
     container_name: magento2-devbox-web
     volumes:
-      - $webroot_path:/var/www/magento2
+      - $webroot_path:$magento_path
       - $composer_path:/root/.composer
       - $ssh_path:/root/.ssh
       #    - ./shared/.magento-cloud:/root/.magento-cloud
@@ -116,5 +120,11 @@ docker-compose up --build -d
 
 docker exec -it --privileged magento2-devbox-web php /root/scripts/composerInstall.php
 docker exec -it --privileged magento2-devbox-web php /root/scripts/magentoSetup.php \
-    --install-rabbitmq=$install_rabbitmq
+    --install-rabbitmq=$install_rabbitmq --rabbit-host=$rabit_host --rabbit-port=$rabbit_port
+
+if [[ $install_redis ]]
+    then docker exec -it --privileged magento2-devbox-web php /root/scripts/setupRedis.php \
+        --redis-host=$redis_host --magento-path=$magento_path
+fi
+
 docker exec -it --privileged magento2-devbox-web php /root/scripts/postInstall.php
