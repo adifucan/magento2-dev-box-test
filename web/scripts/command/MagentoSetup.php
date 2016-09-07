@@ -50,8 +50,7 @@ class MagentoSetup extends AbstractCommand
             $rabbitmqPort = $this->requestOption('rabbitmq-port', $input, $output);
 
             $command .= sprintf(
-                ' --amqp-virtualhost=/ --amqp-host=%s --amqp-port=%s --amqp-user=guest'
-                    . ' --amqp-password=guest',
+                ' --amqp-virtualhost=/ --amqp-host=%s --amqp-port=%s --amqp-user=guest --amqp-password=guest',
                 $rabbitmqHost,
                 $rabbitmqPort
             );
@@ -109,20 +108,20 @@ class MagentoSetup extends AbstractCommand
             ],
             'rabbitmq-install' => [
                 'initial' => true,
-                'valueRequired' => false,
+                'requireValue' => false,
                 'boolean' => true,
                 'default' => false,
                 'description' => 'Whether to install RabbitMQ.',
                 'question' => 'Do you want to install RabbitMQ? %default%'
             ],
             'rabbitmq-host' => [
-                'valueRequired' => false,
+                'requireValue' => false,
                 'default' => 'rabbit',
                 'description' => 'RabbitMQ host.',
                 'question' => 'Please specify RabbitMQ host %default%'
             ],
             'rabbitmq-port' => [
-                'valueRequired' => false,
+                'requireValue' => false,
                 'default' => '5672',
                 'description' => 'RabbitMQ port.',
                 'question' => 'Please specify RabbitMQ port %default%'
