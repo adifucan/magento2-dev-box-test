@@ -57,7 +57,7 @@ abstract class AbstractCommand extends Command
     const OPTION_DEFAULT_INITIAL = false;
     const OPTION_DEFAULT_VIRTUAL = false;
     const OPTION_DEFAULT_BOOLEAN = false;
-    const OPTION_DEFAULT_VALUE_REQUIRED = true;
+    const OPTION_DEFAULT_REQUIRE_VALUE = true;
     /**#@-*/
 
     /**
@@ -80,7 +80,7 @@ abstract class AbstractCommand extends Command
                 $this->addOption(
                     $name,
                     $this->getConfigValue('shortcut', $config),
-                    $this->getConfigValue('valueRequired', $config, static::OPTION_DEFAULT_VALUE_REQUIRED)
+                    $this->getConfigValue('requireValue', $config, static::OPTION_DEFAULT_REQUIRE_VALUE)
                         ? InputOption::VALUE_REQUIRED
                         : InputOption::VALUE_OPTIONAL,
                     $this->getConfigValue('description', $config, ''),
@@ -259,6 +259,19 @@ abstract class AbstractCommand extends Command
 
     /**
      * Get configuration for input options
+     *
+     * Config parameters:
+     * - virtual        virtual options are not added into the list of supported options for this command and their
+     *                  values are not stored
+     * - initial        whether to request for option automatically before command execution (does not support virtual
+     *                  options)
+     * - requireValue   whether to allow this option to be passed as argument with empty value (e.g. "--option" or
+     *                  "--option=")
+     * - boolean        whether this option is of boolean type (boolean option values are converted into boolean type)
+     * - default        default value for this option if not requested or left empty
+     * - shortcut       argument shortcut (e.g. -h for --help)
+     * - description    argument description
+     * - question       default question for interactive option request
      *
      * @return array
      */
