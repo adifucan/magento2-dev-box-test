@@ -115,6 +115,7 @@ cat << EOM >> docker-compose.yml
       #    - ./shared/.magento-cloud:/root/.magento-cloud
     ports:
       - "$web_port:80"
+      - "2222:22"
 EOM
 
 echo "Creating shared folders"

@@ -50,20 +50,7 @@ web:
     #    - ./shared/.magento-cloud:/root/.magento-cloud
   ports:
     - "1748:80"
-  links:
-    - db:db
-"@
-
-if ($install_rabbitmq -eq 'y') {
-$yml += @"
-
-    - rabbit:rabbit
-"@
-}
-
-$yml += @"
-
-  command: "apache2-foreground"
+    - "2222:22"
 "@
 
 if ($install_rabbitmq -eq 'y') {
