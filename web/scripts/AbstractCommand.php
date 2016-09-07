@@ -122,7 +122,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * Request option interactively if it was not specified in command line
+     * Request option interactively
      *
      * @param string $name
      * @param InputInterface $input
