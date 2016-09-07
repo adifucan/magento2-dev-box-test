@@ -37,9 +37,9 @@ services:
     container_name: magento2-devbox-web
     volumes:
       - ./shared/webroot:/var/www/magento2
-      - ./shared/.composer:/root/.composer
+      - ./shared/.composer:/home/magento2/.composer
       - ./shared/.ssh:/root/.ssh
-      #    - ./shared/.magento-cloud:/root/.magento-cloud
-      - ./scripts:/root/scripts
+      #    - ./shared/.magento-cloud:/home/magento2/.magento-cloud
+      - ./scripts:/home/magento2/scripts
     ports:
       - "1749:80"

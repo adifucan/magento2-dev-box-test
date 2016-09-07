@@ -129,14 +129,14 @@ echo 'Build docker images'
 
 docker-compose up --build -d
 
-docker exec -it --privileged magento2-devbox-web /bin/sh -c 'cd /root/scripts && composer install'
-docker exec -it --privileged magento2-devbox-web /bin/sh -c 'cd /root/scripts && composer update'
+docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer install'
+docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer update'
 
-docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:download
-docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
 
 if [[ $install_redis ]]
-    then docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:setup:redis --as-cache=$redis_cache --as-session=$redis_session --host=$redihost --magento-path=$magento_path
+    then docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup:redis --as-cache=$redis_cache --as-session=$redis_session --host=$redihost --magento-path=$magento_path
 fi
 
-docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:prepare
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:prepare

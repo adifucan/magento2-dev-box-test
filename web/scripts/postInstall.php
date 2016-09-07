@@ -7,6 +7,7 @@ function readValue($defaultValue = null)
 }
 
 passthru('cd /var/www/magento2 && php bin/magento deploy:mode:set developer');
+passthru('cd /var/www/magento2 && php bin/magento setup:di:compile');
 
 $response = true;
 while ($response) {
@@ -29,8 +30,11 @@ while ($response) {
     }
 }
 
-passthru('cd /var/www/magento2 && php bin/magento setup:di:compile');
-shell_exec('echo "* * * * * root /usr/local/bin/php /var/www/magento2/bin/magento cron:run | grep -v \"Ran jobs by schedule\" >> /var/www/magento2/var/log/magento.cron.log" >> /etc/crontab');
-shell_exec('echo "* * * * * root /usr/local/bin/php /var/www/magento2/update/cron.php >> /var/www/magento2/var/log/update.cron.log" >> /etc/crontab');
-shell_exec('echo "* * * * * root /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run >> /var/www/magento2/var/log/setup.cron.log" >> /etc/crontab');
-passthru('service cron restart');
+$crontab = <<<EOD
+* * * * * /usr/local/bin/php /var/www/magento2/bin/magento cron:run | grep -v "Ran jobs by schedule" >> /var/www/magento2/var/log/magento.cron.log
+* * * * * magento2 /usr/local/bin/php /var/www/magento2/update/cron.php >> /var/www/magento2/var/log/update.cron.log
+magento2 /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run >> /var/www/magento2/var/log/setup.cron.log
+EOD;
+
+file_put_contents("/home/magento2/crontab.sample", $crontab);
+passthru('crontab /home/magento2/crontab.sample');

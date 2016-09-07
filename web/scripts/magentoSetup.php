@@ -52,7 +52,7 @@ passthru($cmd);
 if (!file_exists('/var/www/magento2/var/composer_home')) {
     mkdir('/var/www/magento2/var/composer_home', 0777, true);
 }
-copy('/root/.composer/auth.json', '/var/www/magento2/var/composer_home/auth.json');
+copy('/home/magento2/.composer/auth.json', '/var/www/magento2/var/composer_home/auth.json');
 
 if ($installSampleData) {
     passthru('cd /var/www/magento2 && php bin/magento sampledata:deploy');

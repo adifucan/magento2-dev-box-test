@@ -1,11 +1,7 @@
-# 1. linux, php 70 [x]
-# 2. mounted directory [x]
-# 3. node, gulp, grunt,
-# 4. blackfireio,
-# 5. email-write-to-file, phpunit, composer, xdebug
-
-FROM php:7.0.9-apache
+FROM php:7.0.10-fpm
 MAINTAINER "Oleksandr Iegorov <oiegorov@magento.com>"
+
+RUN adduser --disabled-password --gecos "" magento2
 
 RUN apt-get update && apt-get install -y \
     apt-utils \
@@ -42,11 +38,6 @@ RUN apt-get clean && apt-get update && apt-get install -y npm \
 
 RUN docker-php-ext-install bcmath
 
-RUN a2enmod rewrite
-
-# Site config
-ADD default.conf /etc/apache2/sites-enabled/default.conf
-RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
 # PHP config
@@ -55,14 +46,28 @@ ADD php.ini /usr/local/etc/php
 # SSH config
 ADD sshd_config /etc/ssh/sshd_config
 ADD supervisord.conf /etc/supervisord.conf
-RUN passwd -d root
+RUN passwd -d magento2
+
+ADD magento2.conf /usr/local/etc/php-fpm.d/magento2.conf
+RUN echo "[magento2]" >> /usr/local/etc/php-fpm.d/docker.conf
+RUN echo "access.log = /proc/self/fd/2" >> /usr/local/etc/php-fpm.d/docker.conf
+RUN echo "clear_env = no" >> /usr/local/etc/php-fpm.d/docker.conf
+RUN echo "catch_workers_output = yes" >> /usr/local/etc/php-fpm.d/docker.conf
+RUN apt-get install -y apache2
+RUN a2enmod rewrite
+RUN a2enmod proxy
+RUN a2enmod proxy_fcgi
+ADD default.conf /etc/apache2/sites-enabled/default.conf
+RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 
 # Initial scripts
 COPY scripts/ /root/scripts/
 
 RUN curl -sS https://accounts.magento.cloud/cli/installer | php
 ENV PATH /root/.magento-cloud/bin:$PATH
-WORKDIR /root
+WORKDIR  /home/magento2
+
+RUN service cron restart
 
 EXPOSE 80 22 44100
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

@@ -45,9 +45,9 @@ web:
   container_name: magento2-devbox-web
   volumes:
     - %%%WEBROOT_PATH%%%:/var/www/magento2
-    - %%%COMPOSER_PATH%%%:/root/.composer
-    - %%%SSH_PATH%%%:/root/.ssh
-    #    - ./shared/.magento-cloud:/root/.magento-cloud
+    - %%%COMPOSER_PATH%%%:/home/magento2/.composer
+    - %%%SSH_PATH%%%:/home/magento2/.ssh
+    #    - ./shared/.magento-cloud:/home/magento2/.magento-cloud
   ports:
     - "1748:80"
     - "2222:22"
@@ -92,9 +92,9 @@ Write-Host "Build docker images"
 
 docker-compose up --build -d
 
-docker exec -it --privileged magento2-devbox-web /bin/sh -c 'cd /root/scripts && composer install'
-docker exec -it --privileged magento2-devbox-web /bin/sh -c 'cd /root/scripts && composer update'
+docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer install'
+docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer update'
 
-docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:download
-docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq
-docker exec -it --privileged magento2-devbox-web php -f /root/scripts/devbox magento:prepare
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:prepare

@@ -7,7 +7,7 @@ function readValue($defaultValue = null)
     return $input ?: $defaultValue;
 }
 
-$fileName = '/root/.composer/auth.json';
+$fileName = '/home/magento2/.composer/auth.json';
 
 echo "Do you want to initialize from Magento Cloud? [yN]\n";
 $handle = fopen ("php://stdin","r");
@@ -47,7 +47,7 @@ if ($fromCloud) {
         if (strlen(trim($line)) > 0) {
             $keyName = trim($line);
         }
-        if (!file_exists('/root/.ssh/' . $keyName)) {
+        if (!file_exists('/home/magento2/.ssh/' . $keyName)) {
             $positiveSolution = false;
             while (!$positiveSolution) {
                 echo "File with the key does not exists, do you want to enter different name? [Yn]\n";
@@ -65,7 +65,7 @@ if ($fromCloud) {
                     $keyName = 'id_rsa';
                     if (strlen(trim($line)) > 0) {
                         $keyName = trim($line);
-                        if (file_exists('/root/.ssh/' . $keyName)) {
+                        if (file_exists('/home/magento2/.ssh/' . $keyName)) {
                             $positiveSolution = true;
                         }
                     }
@@ -80,13 +80,13 @@ if ($fromCloud) {
         if (strlen(trim($line)) > 0) {
             $keyName = trim($line);
         }
-        exec('ssh-keygen -t rsa -N "" -f /root/.ssh/' . $keyName);
+        exec('ssh-keygen -t rsa -N "" -f /home/magento2/.ssh/' . $keyName);
 
     }
 
 
-    chmod('/root/.ssh/' . $keyName, 0600);
-    passthru('echo "IdentityFile /root/.ssh/' . $keyName . '" >> /etc/ssh/ssh_config');
+    chmod('/home/magento2/.ssh/' . $keyName, 0600);
+    passthru('echo "IdentityFile /home/magento2/.ssh/' . $keyName . '" >> /etc/ssh/ssh_config');
 
     echo "Do you want to add key to the Magento Cloud? [Yn]\n";
     $handle = fopen ("php://stdin","r");
@@ -98,7 +98,7 @@ if ($fromCloud) {
         }
     }
     if ($addKeyToCloud) {
-        exec('magento-cloud ssh-key:add /root/.ssh/' . $keyName . '.pub');
+        exec('magento-cloud ssh-key:add /home/magento2/.ssh/' . $keyName . '.pub');
     }
 
     $result = shell_exec('ssh -q -o "BatchMode=yes" idymogyzqpche-master-7rqtwti@ssh.us.magentosite.cloud "echo 2>&1" && echo $host SSH_OK || echo $host SSH_NOK');
