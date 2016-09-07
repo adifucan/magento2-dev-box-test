@@ -83,32 +83,32 @@ class MagentoSetup extends AbstractCommand
     {
         return [
             'backend-path' => [
-                'opening' => true,
+                'initial' => true,
                 'default' => 'admin',
                 'description' => 'Magento backend path.',
                 'question' => 'Please enter backend admin path %default%'
             ],
             'admin-user' => [
-                'opening' => true,
+                'initial' => true,
                 'default' => 'admin',
                 'description' => 'Admin username.',
                 'question' => 'Please enter backend admin username %default%'
             ],
             'admin-password' => [
-                'opening' => true,
+                'initial' => true,
                 'default' => '123123q',
                 'description' => 'Admin password.',
                 'question' => 'Please enter backend admin password %default%'
             ],
             'install-sample-data' => [
-                'opening' => true,
+                'initial' => true,
                 'boolean' => true,
                 'default' => false,
                 'description' => 'Whether to install Sample Data.',
                 'question' => 'Do you want to install Sample Data? %default%'
             ],
             'rabbitmq-install' => [
-                'opening' => true,
+                'initial' => true,
                 'valueRequired' => false,
                 'boolean' => true,
                 'default' => false,

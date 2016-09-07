@@ -177,7 +177,7 @@ class MagentoDownload extends AbstractCommand
     {
         return [
             'install-from-cloud' => [
-                'opening' => true,
+                'initial' => true,
                 'boolean' => true,
                 'default' => false,
                 'description' => 'Whether to get sources from Magento Cloud.',
@@ -200,7 +200,7 @@ class MagentoDownload extends AbstractCommand
                 'question' => 'What is the name of the SSH key to use with the Magento Cloud? %default%'
             ],
             'cloud-try-different-key' => [
-                'interactiveOnly' => true,
+                'virtual' => true,
                 'boolean' => true,
                 'default' => true,
                 'question' => 'File with the key does not exists, do you want to enter different name? %default%'
@@ -216,7 +216,7 @@ class MagentoDownload extends AbstractCommand
                 'question' => 'Please select project to clone'
             ],
             'cloud-continue-with-no-project' => [
-                'interactiveOnly' => true,
+                'virtual' => true,
                 'boolean' => true,
                 'default' => true,
                 'question' => 'You haven\'t entered project name. Do you want to continue? %default%'

@@ -54,8 +54,8 @@ abstract class AbstractCommand extends Command
     /**#@+
      * Option defaults
      */
-    const OPTION_DEFAULT_OPENING = false;
-    const OPTION_DEFAULT_INTERACTIVE_ONLY = false;
+    const OPTION_DEFAULT_INITIAL = false;
+    const OPTION_DEFAULT_VIRTUAL = false;
     const OPTION_DEFAULT_BOOLEAN = false;
     const OPTION_DEFAULT_VALUE_REQUIRED = true;
     /**#@-*/
@@ -76,7 +76,7 @@ abstract class AbstractCommand extends Command
     protected function configure()
     {
         foreach($this->getOptionsConfig() as $name => $config) {
-            if (!$this->getConfigValue('interactiveOnly', $config, static::OPTION_DEFAULT_INTERACTIVE_ONLY)) {
+            if (!$this->getConfigValue('virtual', $config, static::OPTION_DEFAULT_VIRTUAL)) {
                 $this->addOption(
                     $name,
                     $this->getConfigValue('shortcut', $config),
@@ -112,8 +112,8 @@ abstract class AbstractCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         foreach($this->getOptionsConfig() as $name => $config) {
-            if ($this->getConfigValue('opening', $config, static::OPTION_DEFAULT_OPENING)
-                && !$this->getConfigValue('interactiveOnly', $config, static::OPTION_DEFAULT_INTERACTIVE_ONLY)
+            if ($this->getConfigValue('initial', $config, static::OPTION_DEFAULT_INITIAL)
+                && !$this->getConfigValue('virtual', $config, static::OPTION_DEFAULT_VIRTUAL)
                 && !$this->getConfigValue($name, $this->valueSetStates, false)
             ) {
                 $this->requestOption($name, $input, $output);
@@ -151,9 +151,7 @@ abstract class AbstractCommand extends Command
             throw new \Exception(sprintf('Option "%s" has no question and cannot be set interactively!', $name));
         }
 
-        $interactiveOnly = $this->getConfigValue('interactiveOnly', $config, static::OPTION_DEFAULT_INTERACTIVE_ONLY);
-
-        if ($this->getConfigValue($name, $this->valueSetStates, false) && !$overwrite && !$interactiveOnly) {
+        if ($this->getConfigValue($name, $this->valueSetStates, false) && !$overwrite) {
             return $input->getOption($name);
         }
 
@@ -187,11 +185,11 @@ abstract class AbstractCommand extends Command
             : new Question($question, $defaultValue);
         $value = $this->getQuestionHelper()->ask($input, $output, $question);
 
-        if (!$interactiveOnly) {
+        if (!$this->getConfigValue('virtual', $config, static::OPTION_DEFAULT_VIRTUAL)) {
+            $this->valueSetStates[$name] = true;
             $input->setOption($name, $value);
         }
 
-        $this->valueSetStates[$name] = true;
         $output->writeln($isBoolean ? ($value ? static::WORD_BOOLEAN_TRUE : static::WORD_BOOLEAN_FALSE) : $value);
 
         return $value;
