@@ -62,6 +62,7 @@ RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 
 # Initial scripts
 COPY scripts/ /home/magento2/scripts/
+RUN chown -R magento2:magento2 /home/magento2
 
 RUN curl -sS https://accounts.magento.cloud/cli/installer | php
 ENV PATH /root/.magento-cloud/bin:$PATH
