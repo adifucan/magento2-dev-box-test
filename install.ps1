@@ -29,6 +29,8 @@ $yml = @"
 #
 # Docker Compose defines required services and attach them together through aliases
 ##
+version: '2'
+services:
 db:
   container_name: magento2-devbox-db
   restart: always
