@@ -32,8 +32,8 @@ while ($response) {
 
 $crontab = <<<EOD
 * * * * * /usr/local/bin/php /var/www/magento2/bin/magento cron:run | grep -v "Ran jobs by schedule" >> /var/www/magento2/var/log/magento.cron.log
-* * * * * magento2 /usr/local/bin/php /var/www/magento2/update/cron.php >> /var/www/magento2/var/log/update.cron.log
-magento2 /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run >> /var/www/magento2/var/log/setup.cron.log
+* * * * * /usr/local/bin/php /var/www/magento2/update/cron.php >> /var/www/magento2/var/log/update.cron.log
+* * * * * /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run >> /var/www/magento2/var/log/setup.cron.log
 EOD;
 
 file_put_contents("/home/magento2/crontab.sample", $crontab);

@@ -36,7 +36,7 @@ class MagentoPrepare extends AbstractCommand
         $this->executeCommands('cd /var/www/magento2 && php bin/magento deploy:mode:set developer', $output);
 
         if ($this->requestOption('static-deploy', $input, $output)) {
-            $this->executeCommands('cd /var/www/magento2 && php bin/magento -f setup:static-content:deploy', $output);
+            $this->executeCommands('cd /var/www/magento2 && php bin/magento setup:static-content:deploy', $output);
         } elseif ($this->requestOption('static-grunt-compile', $input, $output)) {
             $this->executeCommands(
                 [
@@ -48,20 +48,16 @@ class MagentoPrepare extends AbstractCommand
             );
         }
 
-        $this->executeCommands(
-            [
-                'cd /var/www/magento2 && php bin/magento setup:di:compile',
-                'echo "* * * * * root /usr/local/bin/php /var/www/magento2/bin/magento cron:run'
-                    . ' | grep -v \"Ran jobs by schedule\" >> /var/www/magento2/var/log/magento.cron.log"'
-                    . ' >> /etc/crontab',
-                'echo "* * * * * root /usr/local/bin/php /var/www/magento2/update/cron.php'
-                    . ' >> /var/www/magento2/var/log/update.cron.log" >> /etc/crontab',
-                'echo "* * * * * root /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run'
-                    . ' >> /var/www/magento2/var/log/setup.cron.log" >> /etc/crontab',
-                'service cron restart'
-            ],
-            $output
-        );
+        $crontab = "* * * * * /usr/local/bin/php /var/www/magento2/bin/magento cron:run | grep -v";
+        $crontab .= "\"Ran jobs by schedule\" >> /var/www/magento2/var/log/magento.cron.log\n";
+        $crontab .= "* * * * * /usr/local/bin/php /var/www/magento2/update/cron.php >>";
+        $crontab .= "/var/www/magento2/var/log/update.cron.log\n";
+        $crontab .= "* * * * * /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run";
+        $crontab .= ">> /var/www/magento2/var/log/setup.cron.log\n";
+
+        file_put_contents("/home/magento2/crontab.sample", $crontab);
+
+        $this->executeCommands(['crontab /home/magento2/crontab.sample'], $output);
     }
 
     /**

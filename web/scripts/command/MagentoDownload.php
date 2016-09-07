@@ -41,7 +41,7 @@ class MagentoDownload extends AbstractCommand
             $this->installFromCloud($input, $output);
         }
 
-        $authFile = '/root/.composer/auth.json';
+        $authFile = '/home/magento2/.composer/auth.json';
 
         if (!file_exists($authFile)) {
             $this->generateAuthFile($authFile, $input, $output);
@@ -81,7 +81,7 @@ class MagentoDownload extends AbstractCommand
         if ($this->requestOption('cloud-use-existing-key', $input, $output)) {
             $keyName = $this->requestOption('cloud-key-name', $input, $output);
 
-            while (!file_exists(sprintf('/root/.ssh/%s', $keyName))) {
+            while (!file_exists(sprintf('/home/magento2/.ssh/%s', $keyName))) {
                 if ($this->requestOption('cloud-try-different-key', $input, $output, true)) {
                     $keyName = $this->requestOption('cloud-key-name', $input, $output, true);
                 } else {
@@ -99,14 +99,14 @@ class MagentoDownload extends AbstractCommand
                 false,
                 'New key will be created. Enter the name of the SSH key'
             );
-            $this->executeCommands(sprintf('ssh-keygen -t rsa -N "" -f /root/.ssh/%s', $keyName), $output);
+            $this->executeCommands(sprintf('ssh-keygen -t rsa -N "" -f /home/magento2/.ssh/%s', $keyName), $output);
         }
 
         chmod(sprintf('/root/.ssh/%s', $keyName), 0600);
-        $this->executeCommands(sprintf('echo "IdentityFile /root/.ssh/%s" >> /etc/ssh/ssh_config', $keyName), $output);
+        $this->executeCommands(sprintf('echo "IdentityFile /home/magento2/.ssh/%s" >> /etc/ssh/ssh_config', $keyName), $output);
 
         if ($this->requestOption('cloud-add-key', $input, $output)) {
-            $this->executeCommands(sprintf('magento-cloud ssh-key:add /root/.ssh/%s.pub', $keyName), $output);
+            $this->executeCommands(sprintf('magento-cloud ssh-key:add /home/magento2/.ssh/%s.pub', $keyName), $output);
         }
 
         $result = shell_exec(
