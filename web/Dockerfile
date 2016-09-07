@@ -61,7 +61,7 @@ ADD default.conf /etc/apache2/sites-enabled/default.conf
 RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 
 # Initial scripts
-COPY scripts/ /root/scripts/
+COPY scripts/ /home/magento2/scripts/
 
 RUN curl -sS https://accounts.magento.cloud/cli/installer | php
 ENV PATH /root/.magento-cloud/bin:$PATH
