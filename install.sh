@@ -67,11 +67,13 @@ fi
 read -p 'Do you wish to setup Redis as session storage (y/N): ' redis_session
 read -p 'Do you wish to setup Redis (r) or Varnish (v) as page cache mechanism (any key for default file system storage) (r/v): ' cache_adapter
 
-redis_cache=0
 if [[ $cache_adapter = 'v' ]]
-    then
-        install_varnish='y'
-        redis_cache=1
+    then install_varnish='y'
+fi
+
+redis_cache=0
+if [[ $cache_adapter = 'r' ]]
+    then redis_cache=0
 fi
 
 if [[ $cache_adapter = 'r' ]] || [[ $redis_session = 'y' ]]
