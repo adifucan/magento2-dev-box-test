@@ -31,39 +31,39 @@ $yml = @"
 ##
 version: '2'
 services:
-db:
-  container_name: magento2-devbox-db
-  restart: always
-  image: mysql:5.6
-  ports:
-    - "1345:3306"
-  environment:
-    - MYSQL_ROOT_PASSWORD=root
-    - MYSQL_DATABASE=magento2
-  volumes:
-    - %%%DB_PATH%%%:/var/lib/mysql
-web:
-  build: web
-  container_name: magento2-devbox-web
-  volumes:
-    - %%%WEBROOT_PATH%%%:/var/www/magento2
-    - %%%COMPOSER_PATH%%%:/home/magento2/.composer
-    - %%%SSH_PATH%%%:/home/magento2/.ssh
-    #    - ./shared/.magento-cloud:/home/magento2/.magento-cloud
-  ports:
-    - "1748:80"
-    - "2222:22"
+  db:
+    container_name: magento2-devbox-db
+    restart: always
+    image: mysql:5.6
+    ports:
+        - "1345:3306"
+    environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=magento2
+    volumes:
+        - %%%DB_PATH%%%:/var/lib/mysql
+  web:
+    build: web
+    container_name: magento2-devbox-web
+    volumes:
+        - %%%WEBROOT_PATH%%%:/var/www/magento2
+        - %%%COMPOSER_PATH%%%:/home/magento2/.composer
+        - %%%SSH_PATH%%%:/home/magento2/.ssh
+        #    - ./shared/.magento-cloud:/home/magento2/.magento-cloud
+    ports:
+        - "1748:80"
+        - "2222:22"
 "@
 
 if ($install_rabbitmq -eq 'y') {
 $yml += @"
 
-rabbit:
-  container_name: magento2-devbox-rabbit
-  image: rabbitmq:3-management
-  ports:
-    - "8282:15672"
-    - "5672:5672"
+  rabbit:
+    container_name: magento2-devbox-rabbit
+    image: rabbitmq:3-management
+    ports:
+        - "8282:15672"
+        - "5672:5672"
 "@
 }
 

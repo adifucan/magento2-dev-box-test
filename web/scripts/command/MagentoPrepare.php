@@ -57,7 +57,10 @@ class MagentoPrepare extends AbstractCommand
 
         file_put_contents("/home/magento2/crontab.sample", $crontab);
 
-        $this->executeCommands(['crontab /home/magento2/crontab.sample'], $output);
+        $this->executeCommands(
+            ['crontab /home/magento2/crontab.sample', 'crontab -l'],
+            $output
+        );
     }
 
     /**
