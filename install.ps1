@@ -6,6 +6,7 @@ $use_existing_sources = Read-Host 'Do you have existing copy of Magento 2 (y/N)'
 if ($use_existing_sources -eq 'y') {
     $webroot_path = Read-Host 'Please provide full path to the magento2 folder'
 } else {
+    $use_existing_sources = 'n'
     $webroot_path = "./shared/webroot"
 }
 if ((Read-Host 'Do you have existing copy of .composer folder (y/N)') -eq 'y') {
