@@ -2,8 +2,8 @@ Write-Host "Creating docker-compose config"
 
 $install_rabbitmq = Read-Host 'Do you wish to install RabbitMQ (y/N)'
 
-$use_existing_source = Read-Host 'Do you have existing copy of Magento 2 (y/N)'
-if ($use_existing_source -eq 'y') {
+$use_existing_sources = Read-Host 'Do you have existing copy of Magento 2 (y/N)'
+if ($use_existing_sources -eq 'y') {
     $webroot_path = Read-Host 'Please provide full path to the magento2 folder'
 } else {
     $webroot_path = "./shared/webroot"
@@ -143,10 +143,7 @@ docker-compose up --build -d
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer install'
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer update'
 
-if ($use_existing_source -ne 'y') {
-    docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download
-}
-
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download --use-existing-sources=$use_existing_sources
 docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
 
 if ($install_redis -eq 'y') {
