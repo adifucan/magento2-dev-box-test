@@ -66,26 +66,29 @@ class MagentoSetupRedis extends AbstractCommand
         }
 
         if ($input->getOption('as-cache')) {
-            $config['cache']['frontend'] = [
-                'default' => [
-                    'backend' => 'Cm_Cache_Backend_Redis',
-                    'backend_options' => [
-                        'server' => $host,
-                        'port' => '6379'
-                    ]
-                ],
-                'page_cache' => [
-                    'backend' => 'Cm_Cache_Backend_Redis',
-                    'backend_options' => [
-                        'server' => $host,
-                        'port' => '6379',
-                        'database' => '1',
-                        'compress_data' => '0'
-                    ]
+            $config['cache']['frontend']['page_cache'] = [
+                'backend' => 'Cm_Cache_Backend_Redis',
+                'backend_options' => [
+                    'server' => $host,
+                    'port' => '6379',
+                    'database' => '1',
+                    'compress_data' => '0'
                 ]
             ];
         } else {
-            unset($config['cache']['frontend']);
+            unset($config['cache']['frontend']['page_cache']);
+        }
+
+        if ($input->getOption('as-all-cache')) {
+            $config['cache']['frontend']['default'] = [
+                'backend' => 'Cm_Cache_Backend_Redis',
+                'backend_options' => [
+                    'server' => $host,
+                    'port' => '6379'
+                ]
+            ];
+        } else {
+            unset($config['cache']['frontend']['default']);
         }
 
         file_put_contents($configPath, sprintf("<?php\n return %s;", var_export($config, true)));
@@ -101,8 +104,15 @@ class MagentoSetupRedis extends AbstractCommand
                 'initial' => true,
                 'boolean' => true,
                 'default' => false,
-                'description' => 'Whether to use Redis as Magento cache.',
-                'question' => 'Do you want to use Redis as Magento cache? %default%'
+                'description' => 'Whether to use Redis as Magento Full Page cache.',
+                'question' => 'Do you want to use Redis as Magento Full Page cache? %default%'
+            ],
+            'as-all-cache' => [
+                'initial' => true,
+                'boolean' => true,
+                'default' => false,
+                'description' => 'Whether to use Redis as Magento default cache.',
+                'question' => 'Do you want to use Redis as Magento default cache? %default%'
             ],
             'as-session' => [
                 'initial' => true,

@@ -70,20 +70,13 @@ EOM
 fi
 
 read -p 'Do you wish to setup Redis as session storage (y/N): ' redis_session
-read -p 'Do you wish to setup Redis (r) or Varnish (v) as page cache mechanism (any key for default file system storage) (r/v): ' cache_adapter
+read -p 'Do you wish to setup Redis as default cache for all types (except Full Page Cache) (y/N): ' redis_all_cache
+read -p 'For Full Page cache do you wish to setup Redis (r) or Varnish (v) or use default file system storage (any key) (r/v/anykey): ' cache_adapter
 
-if [[ $cache_adapter = 'v' ]]
-    then install_varnish='y'
-fi
-
-redis_cache=0
-if [[ $cache_adapter = 'r' ]]
-    then redis_cache=1
-fi
-
-if [[ $cache_adapter = 'r' ]] || [[ $redis_session = 'y' ]]
-    then install_redis='y'
-fi
+# ternary operator
+[[ $cache_adapter = 'v' ]] && install_varnish='y' || install_varnish='n'
+[[ $cache_adapter = 'r' ]] && redis_cache=1 || redis_cache=0
+([[ $cache_adapter = 'r' ]] || [[ $redis_session = 'y' ]] || [[ $redis_all_cache = 'y' ]]) && install_redis='y' || install_redis='n'
 
 redis_host='redis'
 if [[ $install_redis = 'y' ]]
@@ -143,20 +136,27 @@ docker-compose up --build -d
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer install'
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer update'
 
-docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download --use-existing-sources=$use_existing_sources
-docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
+docker exec -it --privileged -u magento2 magento2-devbox-web \
+    php -f /home/magento2/scripts/devbox magento:download --use-existing-sources=$use_existing_sources
+docker exec -it --privileged -u magento2 magento2-devbox-web \
+    php -f /home/magento2/scripts/devbox magento:setup \
+        --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
 
 if [[ $install_redis ]]
-    then docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup:redis --as-cache=$redis_cache --as-session=$redis_session --host=$redis_host --magento-path=$magento_path
+    then docker exec -it --privileged -u magento2 magento2-devbox-web \
+        php -f /home/magento2/scripts/devbox magento:setup:redis \
+            --as-all-cache=$redis_all_cache --as-cache=$redis_cache \
+            --as-session=$redis_session --host=$redis_host --magento-path=$magento_path
 fi
 
 if [[ $install_varnish ]]
     then
         varnish_file=/home/magento2/scripts/default.vcl
         docker exec -it --privileged -u magento2 magento2-devbox-web \
-        php -f /home/magento2/scripts/devbox magento:setup:varnish  \
-            --db-host=$db_host --db-port=$db_port --db-user=$db_user --db-name=$db_name --db-password=$db_password \
-            --backend-host=$main_host --backend-port=$main_host_port --out-file-path=/home/magento2/scripts/default.vcl
+            php -f /home/magento2/scripts/devbox magento:setup:varnish  \
+                --db-host=$db_host --db-port=$db_port --db-user=$db_user --db-name=$db_name --db-password=$db_password \
+                --backend-host=$main_host --backend-port=$main_host_port \
+                --out-file-path=/home/magento2/scripts/default.vcl
 
         docker cp "$main_host_container:/$varnish_file" ./web/scripts/command/default.vcl
         docker cp ./web/scripts/command/default.vcl $varnish_host_container:/etc/varnish/default.vcl
