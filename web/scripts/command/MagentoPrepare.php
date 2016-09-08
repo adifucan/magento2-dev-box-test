@@ -52,7 +52,7 @@ class MagentoPrepare extends AbstractCommand
         $crontab .= "\"Ran jobs by schedule\" >> /var/www/magento2/var/log/magento.cron.log\n";
         $crontab .= "* * * * * /usr/local/bin/php /var/www/magento2/update/cron.php >>";
         $crontab .= "/var/www/magento2/var/log/update.cron.log\n";
-        $crontab .= "* * * * * /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run";
+        $crontab .= "* * * * * /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run ";
         $crontab .= ">> /var/www/magento2/var/log/setup.cron.log\n";
 
         file_put_contents("/home/magento2/crontab.sample", $crontab);
