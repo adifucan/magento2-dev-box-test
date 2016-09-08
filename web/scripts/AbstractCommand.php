@@ -28,7 +28,7 @@ abstract class AbstractCommand extends Command
     /**#@-*/
 
     /**#@+
-     * Question elements patterns
+     * Question element patterns
      */
     const QUESTION_PATTERN = '%message%: ';
     const QUESTION_PATTERN_DEFAULT = '[default: %value%]';
@@ -36,7 +36,7 @@ abstract class AbstractCommand extends Command
     /**#@-*/
 
     /**#@+
-     * Question patterns placeholders
+     * Question pattern placeholders
      */
     const QUESTION_PLACEHOLDER_MESSAGE = '%message%';
     const QUESTION_PLACEHOLDER_DEFAULT = '%default%';
@@ -122,7 +122,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * Request option interactively if it was not specified in command line
+     * Request option interactively
      *
      * @param string $name
      * @param InputInterface $input
