@@ -48,19 +48,19 @@ class MagentoPrepare extends AbstractCommand
             );
         }
 
-        $crontab = "* * * * * /usr/local/bin/php /var/www/magento2/bin/magento cron:run | grep -v";
-        $crontab .= "\"Ran jobs by schedule\" >> /var/www/magento2/var/log/magento.cron.log\n";
-        $crontab .= "* * * * * /usr/local/bin/php /var/www/magento2/update/cron.php >>";
-        $crontab .= "/var/www/magento2/var/log/update.cron.log\n";
-        $crontab .= "* * * * * /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run ";
-        $crontab .= ">> /var/www/magento2/var/log/setup.cron.log\n";
-
-        file_put_contents("/home/magento2/crontab.sample", $crontab);
-
-        $this->executeCommands(
-            ['crontab /home/magento2/crontab.sample', 'crontab -l'],
-            $output
+        $crontab = implode(
+            "\n",
+            [
+                '* * * * * /usr/local/bin/php /var/www/magento2/bin/magento cron:run | grep -v "Ran jobs by schedule"'
+                    . ' >> /var/www/magento2/var/log/magento.cron.log',
+                '* * * * * /usr/local/bin/php /var/www/magento2/update/cron.php'
+                    . ' >> /var/www/magento2/var/log/update.cron.log',
+                '* * * * * /usr/local/bin/php /var/www/magento2/bin/magento setup:cron:run'
+                    . ' >> /var/www/magento2/var/log/setup.cron.log'
+            ]
         );
+        file_put_contents("/home/magento2/crontab.sample", $crontab . "\n");
+        $this->executeCommands(['crontab /home/magento2/crontab.sample', 'crontab -l'], $output);
     }
 
     /**
