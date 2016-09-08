@@ -81,6 +81,7 @@ abstract class AbstractCommand extends Command
                     $name,
                     $this->getConfigValue('shortcut', $config),
                     $this->getConfigValue('requireValue', $config, static::OPTION_DEFAULT_REQUIRE_VALUE)
+                        && !$this->getConfigValue('boolean', $config, static::OPTION_DEFAULT_BOOLEAN)
                         ? InputOption::VALUE_REQUIRED
                         : InputOption::VALUE_OPTIONAL,
                     $this->getConfigValue('description', $config, ''),
