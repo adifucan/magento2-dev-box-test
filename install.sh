@@ -112,8 +112,8 @@ cat << EOM >> docker-compose.yml
     container_name: magento2-devbox-web
     volumes:
       - $webroot_path:$magento_path
-      - $composer_path:/root/.composer
-      - $ssh_path:/root/.ssh
+      - $composer_path:/home/magento2/.composer
+      - $ssh_path:/home/magento2/.ssh
       #    - ./shared/.magento-cloud:/root/.magento-cloud
     ports:
       - "$web_port:80"
