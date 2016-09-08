@@ -35,9 +35,9 @@ class MagentoDownload extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $installFromCloud = $input->getOption('install-from-cloud');
+        $useExistingSources = $input->getOption('use-existing-sources');
 
-        if ($installFromCloud) {
+        if (!$useExistingSources && $this->requestOption('install-from-cloud', $input, $output)) {
             $this->installFromCloud($input, $output);
         }
 
@@ -47,8 +47,11 @@ class MagentoDownload extends AbstractCommand
             $this->generateAuthFile($authFile, $input, $output);
         }
 
-        if (!$installFromCloud && !file_exists('/var/www/magento2/composer.json')) {
-            $version = strtoupper($this->requestOption('magento-edition', $input, $output)) == 'EE'
+        if (!$useExistingSources
+            && !$this->requestOption('install-from-cloud', $input, $output)
+            && !file_exists('/var/www/magento2/composer.json')
+        ) {
+            $version = strtolower($this->requestOption('magento-edition', $input, $output)) == 'ee'
                 ? 'enterprise'
                 : 'community';
             $this->executeCommands(
@@ -176,8 +179,14 @@ class MagentoDownload extends AbstractCommand
     protected function getOptionsConfig()
     {
         return [
-            'install-from-cloud' => [
+            'use-existing-sources' => [
                 'initial' => true,
+                'boolean' => true,
+                'default' => false,
+                'description' => 'Whether to use existing sources.',
+                'question' => 'Do you want to use existing sources? %default%'
+            ],
+            'install-from-cloud' => [
                 'boolean' => true,
                 'default' => false,
                 'description' => 'Whether to get sources from Magento Cloud.',
