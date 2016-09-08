@@ -102,7 +102,7 @@ if ($install_varnish -eq 'y') {
 $yml += @"
 
   varnish:
-    build: varnish
+    image: magento/magento2devbox_varnish:latest
     container_name: magento2-devbox-varnish
     ports:
       - "1748:6081"

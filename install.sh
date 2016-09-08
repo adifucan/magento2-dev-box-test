@@ -101,7 +101,7 @@ if [[ $install_varnish = 'y' ]]
     then
         cat << EOM >> docker-compose.yml
   varnish:
-    build: varnish
+    image: magento/magento2devbox_varnish:latest
     container_name: $varnish_host_container
     links:
       - web:web
