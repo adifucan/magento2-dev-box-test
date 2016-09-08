@@ -2,7 +2,8 @@ Write-Host "Creating docker-compose config"
 
 $install_rabbitmq = Read-Host 'Do you wish to install RabbitMQ (y/N)'
 
-if ((Read-Host 'Do you have existing copy of Magento 2 (y/N)') -eq 'y') {
+$use_existing_source = Read-Host 'Do you have existing copy of Magento 2 (y/N)'
+if ($use_existing_source -eq 'y') {
     $webroot_path = Read-Host 'Please provide full path to the magento2 folder'
 } else {
     $webroot_path = "./shared/webroot"
@@ -51,26 +52,71 @@ services:
         - %%%SSH_PATH%%%:/home/magento2/.ssh
         #    - ./shared/.magento-cloud:/home/magento2/.magento-cloud
     ports:
-        - "1748:80"
+        - "%%%WEB_PORT%%%:80"
         - "2222:22"
 "@
 
+$rabbit_host = 'rabbit'
+$rabbit_port = 5672
 if ($install_rabbitmq -eq 'y') {
 $yml += @"
 
-  rabbit:
+  %%%RABBIT_HOST%%%:
     container_name: magento2-devbox-rabbit
     image: rabbitmq:3-management
     ports:
         - "8282:15672"
-        - "5672:5672"
+        - "%%%RABBIT_PORT%%%:%%%RABBIT_PORT%%%"
 "@
+}
+
+$redis_session = Read-Host 'Do you wish to setup Redis as session storage (y/N)'
+$cache_adapter = Read-Host 'Do you wish to setup Redis (r) or Varnish (v) as page cache mechanism (any key for default file system storage) (r/v)'
+
+if ($cache_adapter -eq 'v') {
+    $install_varnish = 'y'
+}
+
+$redis_cache = 0
+if ($cache_adapter -eq 'r') {
+    $redis_cache = 1
+}
+
+if ($cache_adapter -eq 'r' || $redis_session -eq 'y') {
+    $install_redis = 'y'
+}
+
+$redis_host = 'redis'
+if ($install_redis -eq 'y') {
+$yml += @"
+
+  %%%REDIS_HOST%%%:
+    container_name: magento2-devbox-redis
+    image: redis:3.0.7
+"@
+}
+
+$web_port=1748
+if ($install_varnish -eq 'y') {
+$yml += @"
+
+  varnish:
+    build: varnish
+    container_name: magento2-devbox-varnish
+    ports:
+      - "1748:6081"
+"@
+$web_port = 1749
 }
 
 $yml = $yml -Replace "%%%WEBROOT_PATH%%%", $webroot_path
 $yml = $yml -Replace "%%%COMPOSER_PATH%%%", $composer_path
 $yml = $yml -Replace "%%%SSH_PATH%%%", $ssh_path
 $yml = $yml -Replace "%%%DB_PATH%%%", $db_path
+$yml = $yml -Replace "%%%RABBIT_HOST%%%", $rabbit_host
+$yml = $yml -Replace "%%%RABBIT_PORT%%%", $rabbit_port
+$yml = $yml -Replace "%%%REDIS_HOST%%%", $redis_host
+$yml = $yml -Replace "%%%WEB_PORT%%%", $web_port
 Set-Content docker-compose.yml $yml
 
 Write-Host "Creating shared folders"
@@ -97,6 +143,14 @@ docker-compose up --build -d
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer install'
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer update'
 
-docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download
-docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq
+if ($use_existing_source -ne 'y') {
+    docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download
+}
+
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
+
+if ($install_redis -eq 'y') {
+    then docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup:redis --as-cache=$redis_cache --as-session=$redis_session --host=$redihost --magento-path=$magento_path
+}
+
 docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:prepare

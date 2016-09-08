@@ -73,7 +73,7 @@ fi
 
 redis_cache=0
 if [[ $cache_adapter = 'r' ]]
-    then redis_cache=0
+    then redis_cache=1
 fi
 
 if [[ $cache_adapter = 'r' ]] || [[ $redis_session = 'y' ]]
