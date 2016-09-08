@@ -33,7 +33,7 @@ services:
     ports:
       - "1748:6081"
   web:
-    build: web
+    image: magento/magento2devbox_web:latest
     container_name: magento2-devbox-web
     volumes:
       - ./shared/webroot:/var/www/magento2

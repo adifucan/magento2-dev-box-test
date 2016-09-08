@@ -108,7 +108,7 @@ fi
 magento_path='/var/www/magento2'
 cat << EOM >> docker-compose.yml
   web:
-    build: web
+    image: magento/magento2devbox_web:latest
     container_name: magento2-devbox-web
     volumes:
       - $webroot_path:$magento_path

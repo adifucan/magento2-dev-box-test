@@ -45,8 +45,8 @@ services:
     volumes:
         - %%%DB_PATH%%%:/var/lib/mysql
   web:
-    build: web
     container_name: magento2-devbox-web
+    image: magento/magento2devbox_web:latest
     volumes:
         - %%%WEBROOT_PATH%%%:/var/www/magento2
         - %%%COMPOSER_PATH%%%:/home/magento2/.composer
