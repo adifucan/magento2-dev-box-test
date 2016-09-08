@@ -148,7 +148,7 @@ docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magent
 docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
 
 if ($install_redis -eq 'y') {
-    then docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup:redis --as-cache=$redis_cache --as-session=$redis_session --host=$redihost --magento-path=$magento_path
+    docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup:redis --as-cache=$redis_cache --as-session=$redis_session --host=$redihost --magento-path=$magento_path
 }
 
 docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:prepare
