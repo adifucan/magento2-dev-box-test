@@ -58,20 +58,21 @@ class MagentoSetup extends AbstractCommand
 
         $this->executeCommands($command, $output);
 
-        if (!file_exists('/var/www/magento2/var/composer_home')) {
-            mkdir('/var/www/magento2/var/composer_home', 0777, true);
-        }
+        if (!$input->getOption('use-existing-sources')) {
+            if (!file_exists('/var/www/magento2/var/composer_home/auth.json')) {
+                mkdir('/var/www/magento2/var/composer_home', 0777, true);
+                copy('/home/magento2/.composer/auth.json', '/var/www/magento2/var/composer_home/auth.json');
+            }
 
-        copy('/home/magento2/.composer/auth.json', '/var/www/magento2/var/composer_home/auth.json');
-
-        if ($input->getOption('install-sample-data')) {
-            $this->executeCommands(
-                [
-                    'cd /var/www/magento2 && php bin/magento sampledata:deploy',
-                    'cd /var/www/magento2 && php bin/magento setup:upgrade'
-                ],
-                $output
-            );
+            if ($this->requestOption('install-sample-data', $input, $output)) {
+                $this->executeCommands(
+                    [
+                        'cd /var/www/magento2 && php bin/magento sampledata:deploy',
+                        'cd /var/www/magento2 && php bin/magento setup:upgrade'
+                    ],
+                    $output
+                );
+            }
         }
     }
 
@@ -81,6 +82,13 @@ class MagentoSetup extends AbstractCommand
     protected function getOptionsConfig()
     {
         return [
+            'use-existing-sources' => [
+                'initial' => true,
+                'boolean' => true,
+                'default' => false,
+                'description' => 'Whether to use existing sources.',
+                'question' => 'Do you want to use existing sources? %default%'
+            ],
             'backend-path' => [
                 'initial' => true,
                 'default' => 'admin',
@@ -99,16 +107,8 @@ class MagentoSetup extends AbstractCommand
                 'description' => 'Admin password.',
                 'question' => 'Please enter backend admin password %default%'
             ],
-            'install-sample-data' => [
-                'initial' => true,
-                'boolean' => true,
-                'default' => false,
-                'description' => 'Whether to install Sample Data.',
-                'question' => 'Do you want to install Sample Data? %default%'
-            ],
             'rabbitmq-install' => [
                 'initial' => true,
-                'requireValue' => false,
                 'boolean' => true,
                 'default' => false,
                 'description' => 'Whether to install RabbitMQ.',
@@ -125,6 +125,12 @@ class MagentoSetup extends AbstractCommand
                 'default' => '5672',
                 'description' => 'RabbitMQ port.',
                 'question' => 'Please specify RabbitMQ port %default%'
+            ],
+            'install-sample-data' => [
+                'boolean' => true,
+                'default' => false,
+                'description' => 'Whether to install Sample Data.',
+                'question' => 'Do you want to install Sample Data? %default%'
             ]
         ];
     }

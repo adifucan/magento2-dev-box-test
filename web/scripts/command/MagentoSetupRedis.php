@@ -101,7 +101,6 @@ class MagentoSetupRedis extends AbstractCommand
                 'initial' => true,
                 'boolean' => true,
                 'default' => false,
-                'requireValue' => false,
                 'description' => 'Whether to use Redis as Magento cache.',
                 'question' => 'Do you want to use Redis as Magento cache? %default%'
             ],
@@ -109,7 +108,6 @@ class MagentoSetupRedis extends AbstractCommand
                 'initial' => true,
                 'boolean' => true,
                 'default' => false,
-                'requireValue' => false,
                 'description' => 'Whether to use Redis for storing sessions.',
                 'question' => 'Do you want to use Redis for storing sessions? %default%'
             ],
