@@ -82,7 +82,7 @@ if ($cache_adapter -eq 'r') {
     $redis_cache = 1
 }
 
-if ($cache_adapter -eq 'r' || $redis_session -eq 'y') {
+if (($cache_adapter -eq 'r') -Or ($redis_session -eq 'y')) {
     $install_redis = 'y'
 }
 
