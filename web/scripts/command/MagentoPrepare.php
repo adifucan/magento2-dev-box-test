@@ -65,6 +65,20 @@ class MagentoPrepare extends AbstractCommand
         );
         file_put_contents("/home/magento2/crontab.sample", $crontab . "\n");
         $this->executeCommands(['crontab /home/magento2/crontab.sample', 'crontab -l'], $output);
+
+        // setup configs for integration tests
+        copy(
+            '/var/www/magento2/dev/tests/integration/phpunit.xml.dist',
+            '/var/www/magento2/dev/tests/integration/phpunit.xml'
+        );
+        copy(
+            '/var/www/magento2/dev/tests/integration/etc/config-global.php.dist',
+            '/var/www/magento2/dev/tests/integration/etc/config-global.php'
+        );
+        copy(
+            '/var/www/magento2/dev/tests/integration/etc/install-config-mysql.travis.php.dist',
+            '/var/www/magento2/dev/tests/integration/etc/install-config-mysql.travis.php'
+        );
     }
 
     /**

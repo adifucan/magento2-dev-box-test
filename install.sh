@@ -162,4 +162,7 @@ if [[ $install_varnish ]]
         docker-compose restart varnish
 fi
 
+docker exec -it --privileged -u magento2 magento2-devbox-web mysql -h db -u root -proot -e 'create database magento_integration_tests;'
+docker cp ./web/integration/install-config-mysql.php magento2-devbox-web:/var/www/magento2/dev/tests/integration/etc/install-config-mysql.php
+
 docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:prepare

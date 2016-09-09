@@ -6,7 +6,7 @@ Run PowerShell as administrator and give permission to run scripts with command:
 
 ## Installation (Windows 10)
 1. Clone this repository && cd magento2-dev-box
-2. `& ".\install.ps1"` - during command execution you will be asked for your magento repo credentials
+2. Run `& ".\install.ps1"` in PowerShell - during command execution you will be asked for your magento repo credentials
 3. Open in browser http://localhost:1748/
 
 ## Debug your PHP in Docker with Intellij/PHPStorm and Xdebug
@@ -40,7 +40,7 @@ To compile CSS out of LESS via Grunt you need:
  - Name: {{your_name}}
  - Remote: SSH Credentials
  - Host: 127.0.0.1 Port: 2222
- - Username: root
+ - Username: magento2
  - Password: 
  - PHP executable: /usr/local/bin/php
  
