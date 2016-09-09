@@ -42,8 +42,8 @@ class MagentoDownload extends AbstractCommand
         }
 
         $authFile = '/home/magento2/.composer/auth.json';
-
-        if (!file_exists($authFile)) {
+        $rootAuth = '/var/www/magento2/auth.json';
+        if (!file_exists($authFile) && !(file_exists($rootAuth))) {
             $this->generateAuthFile($authFile, $input, $output);
         }
 
@@ -64,7 +64,6 @@ class MagentoDownload extends AbstractCommand
             );
         } else {
             $this->executeCommands('cd /var/www/magento2 && composer install', $output);
-            $this->executeCommands('cd /var/www/magento2 && composer update', $output);
         }
     }
 
@@ -79,7 +78,6 @@ class MagentoDownload extends AbstractCommand
     private function installFromCloud(InputInterface $input, OutputInterface $output)
     {
         $this->executeCommands('magento-cloud', $output);
-        $branch = $this->requestOption('cloud-branch', $input, $output);
 
         if ($this->requestOption('cloud-use-existing-key', $input, $output)) {
             $keyName = $this->requestOption('cloud-key-name', $input, $output);
@@ -105,7 +103,7 @@ class MagentoDownload extends AbstractCommand
             $this->executeCommands(sprintf('ssh-keygen -t rsa -N "" -f /home/magento2/.ssh/%s', $keyName), $output);
         }
 
-        chmod(sprintf('/root/.ssh/%s', $keyName), 0600);
+        chmod(sprintf('/home/magento2/.ssh/%s', $keyName), 0600);
         $this->executeCommands(sprintf('echo "IdentityFile /home/magento2/.ssh/%s" >> /etc/ssh/ssh_config', $keyName), $output);
 
         if ($this->requestOption('cloud-add-key', $input, $output)) {
@@ -131,11 +129,23 @@ class MagentoDownload extends AbstractCommand
 
         while (!$project) {
             if ($this->requestOption('cloud-continue-with-no-project', $input, $output, true)) {
-                $this->executeCommands('magento-cloud project:list', $output);
                 $project = $this->requestOption('cloud-project', $input, $output, true);
             } else {
                 throw new \Exception(
                     'You selected to init project from the Magento Cloud, but haven\'t provided project name.'
+                    . ' Please start from the beginning.'
+                );
+            }
+        }
+
+        $this->executeCommands('magento-cloud environment:list --project=' . $project, $output);
+        $branch = $this->requestOption('cloud-branch', $input, $output);
+        while (!$branch) {
+            if ($this->requestOption('cloud-continue-with-no-branch', $input, $output, true)) {
+                $project = $this->requestOption('cloud-branch', $input, $output, true);
+            } else {
+                throw new \Exception(
+                    'You selected to init project from the Magento Cloud, but haven\'t provided branch name.'
                     . ' Please start from the beginning.'
                 );
             }
@@ -229,6 +239,12 @@ class MagentoDownload extends AbstractCommand
                 'boolean' => true,
                 'default' => true,
                 'question' => 'You haven\'t entered project name. Do you want to continue? %default%'
+            ],
+            'cloud-continue-with-no-branch' => [
+                'virtual' => true,
+                'boolean' => true,
+                'default' => true,
+                'question' => 'You haven\'t entered branch name. Do you want to continue? %default%'
             ],
             'magento-public-key' => [
                 'description' => 'Composer public key for Magento.',

@@ -38,7 +38,7 @@ services:
     volumes:
       - ./shared/webroot:/var/www/magento2
       - ./shared/.composer:/home/magento2/.composer
-      - ./shared/.ssh:/root/.ssh
+      - ./shared/.ssh:/home/magento2/.ssh
       #    - ./shared/.magento-cloud:/home/magento2/.magento-cloud
       - ./scripts:/home/magento2/scripts
     ports:
