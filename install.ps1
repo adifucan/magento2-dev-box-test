@@ -154,6 +154,7 @@ Write-Host "Build docker images"
 
 docker-compose up --build -d
 
+docker exec -it --privileged magento2-devbox-web /bin/sh -c 'chown -R magento2:magento2 /home/magento2'
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer install'
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer update'
 
