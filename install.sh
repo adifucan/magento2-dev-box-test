@@ -96,8 +96,6 @@ if [[ $install_varnish = 'y' ]]
   varnish:
     image: magento/magento2devbox_varnish:latest
     container_name: $varnish_host_container
-    links:
-      - web:web
     ports:
       - "1748:6081"
 EOM
