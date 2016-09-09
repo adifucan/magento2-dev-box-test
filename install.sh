@@ -94,7 +94,7 @@ if [[ $install_varnish = 'y' ]]
     then
         cat << EOM >> docker-compose.yml
   varnish:
-    build: varnish
+    image: magento/magento2devbox_varnish:latest
     container_name: $varnish_host_container
     links:
       - web:web
@@ -136,11 +136,8 @@ docker-compose up --build -d
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer install'
 docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /home/magento2/scripts && composer update'
 
-docker exec -it --privileged -u magento2 magento2-devbox-web \
-    php -f /home/magento2/scripts/devbox magento:download --use-existing-sources=$use_existing_sources
-docker exec -it --privileged -u magento2 magento2-devbox-web \
-    php -f /home/magento2/scripts/devbox magento:setup \
-        --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download --use-existing-sources=$use_existing_sources
+docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --use-existing-sources=$use_existing_sources --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
 
 if [[ $install_redis ]]
     then docker exec -it --privileged -u magento2 magento2-devbox-web \

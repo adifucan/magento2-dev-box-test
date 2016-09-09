@@ -48,6 +48,10 @@ class MagentoPrepare extends AbstractCommand
             );
         }
 
+        if ($this->requestOption('di-compile', $input, $output)) {
+            $this->executeCommands('cd /var/www/magento2 && php bin/magento setup:di:compile', $output);
+        }
+
         $crontab = implode(
             "\n",
             [
@@ -80,6 +84,12 @@ class MagentoPrepare extends AbstractCommand
                 'default' => false,
                 'description' => 'Whether to compile CSS out of LESS via Grunt.',
                 'question' => 'Do you want to compile CSS out of LESS via Grunt? %default%'
+            ],
+            'di-compile' => [
+                'boolean' => true,
+                'default' => false,
+                'description' => 'Whether to create generated files beforehand.',
+                'question' => 'Do you want to create generated files beforehand? %default%'
             ]
         ];
     }
