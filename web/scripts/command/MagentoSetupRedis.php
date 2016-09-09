@@ -110,7 +110,7 @@ class MagentoSetupRedis extends AbstractCommand
             'as-all-cache' => [
                 'initial' => true,
                 'boolean' => true,
-                'default' => false,
+                'default' => true,
                 'description' => 'Whether to use Redis as Magento default cache.',
                 'question' => 'Do you want to use Redis as Magento default cache? %default%'
             ],
