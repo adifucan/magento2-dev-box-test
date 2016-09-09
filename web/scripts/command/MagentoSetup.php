@@ -28,11 +28,18 @@ class MagentoSetup extends AbstractCommand
         parent::configure();
     }
 
+    private function cleanupSystem()
+    {
+        $this->executeCommands('cd /var/www/magento2 && rm -rf var/* pub/static/* app/etc/env.php app/etc/config.php');
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->cleanupSystem();
+
         $command = sprintf(
             'cd /var/www/magento2 && php bin/magento setup:install'
                 . ' --base-url=http://localhost:1748/ --db-host=db --db-name=magento2'
@@ -46,14 +53,18 @@ class MagentoSetup extends AbstractCommand
         );
 
         if ($input->getOption('rabbitmq-install')) {
-            $rabbitmqHost = $this->requestOption('rabbitmq-host', $input, $output);
-            $rabbitmqPort = $this->requestOption('rabbitmq-port', $input, $output);
+            $amqpModuleExist = exec('cd /var/www/magento2 && php bin/magento module:status | grep Magento_Amqp');
 
-            $command .= sprintf(
-                ' --amqp-virtualhost=/ --amqp-host=%s --amqp-port=%s --amqp-user=guest --amqp-password=guest',
-                $rabbitmqHost,
-                $rabbitmqPort
-            );
+            if ($amqpModuleExist) {
+                $rabbitmqHost = $this->requestOption('rabbitmq-host', $input, $output);
+                $rabbitmqPort = $this->requestOption('rabbitmq-port', $input, $output);
+
+                $command .= sprintf(
+                    ' --amqp-virtualhost=/ --amqp-host=%s --amqp-port=%s --amqp-user=guest --amqp-password=guest',
+                    $rabbitmqHost,
+                    $rabbitmqPort
+                );
+            }
         }
 
         $this->executeCommands($command, $output);
