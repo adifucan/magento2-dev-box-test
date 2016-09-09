@@ -46,7 +46,8 @@ To compile CSS out of LESS via Grunt you need:
  
 2. Go to Languages & Frameworks > PHP:
  - Interpreter: Remote PHP 7
- - Path mapping: ../magento2-dev-box/shared/webroot -> /var/www/magento2
+ - Path mapping: ../magento2-dev-box/shared/webroot -> /var/www/magento2 <br/>
+   :information_source: If your Magento is installed not in default location (/magento2-dev-box/shared/webroot) enter your custom location here.
  
 3. Go to Languages & Frameworks > PHP > PHPUnit and click +:
  - Interpreter: Remote PHP 7
@@ -69,7 +70,7 @@ To compile CSS out of LESS via Grunt you need:
  
 ## FAQ
 1. If Xdebug does not work. Solution:
-- For Mac OS run in terminal `ifconfig | grep inet` and get your ip address. For Windows users check this article: https://support.microsoft.com/en-us/help/15291/windows-find-pc-ip-address
+- For Mac OS run in terminal `ifconfig | grep inet` and get your ip address. Windows users check this article: https://support.microsoft.com/en-us/help/15291/windows-find-pc-ip-address
 - Go to web container: `docker exec -it --privileged magento2-devbox-web /bin/bash`
 - Within container go to: `/usr/local/etc/php/conf.d`
 - Open file: `vi docker-php-ext-xdebug.ini`
