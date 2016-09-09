@@ -5,7 +5,7 @@ Docker (https://www.docker.com/products/docker#/windows) for windows should be i
 Run PowerShell as administrator and give permission to run scripts with command: `Set-ExecutionPolicy Unrestricted`
 
 ## Installation (Windows 10)
-1. Clone this repository && cd magento2-dev-box
+1. Clone this repository && run `cd magento2-dev-box` in terminal
 2. Run `& ".\install.ps1"` in PowerShell - during command execution you will be asked for your magento repo credentials
 3. Open in browser http://localhost:1748/
 
@@ -54,3 +54,27 @@ To compile CSS out of LESS via Grunt you need:
  - PHPUnit Library: Use Composer autoloader
  - Path to script: /var/www/magento2/vendor/autoload.php
  
+## Use Magento CLI (bin/magento)
+ Go to 'magento2-dev-box' directory and run in command line:
+ 
+ For Linux/Mac OS run:
+ `bash m-bin-magento <command_name>`
+ e.g.
+ `bash m-bin-magento list`
+
+ For Windows run in PowerShell:
+ `.\m-bin-magento.ps1 <command_name>`
+ e.g.
+ `.\m-bin-magento.ps1 list`
+ 
+## FAQ
+1. If Xdebug does not work. Solution:
+- For Mac OS run in terminal `ifconfig | grep inet` and get your ip address. For Windows users check this article: https://support.microsoft.com/en-us/help/15291/windows-find-pc-ip-address
+- Go to web container: `docker exec -it --privileged magento2-devbox-web /bin/bash`
+- Within container go to: `/usr/local/etc/php/conf.d`
+- Open file: `vi docker-php-ext-xdebug.ini`
+- Start to edit it by typing: `i`
+- Add row: `xdebug.remote_host=<your_ip_from_step_1>`
+- Set: `xdebug.remote_connect_back=0`
+- Quit vi by typing: `Esc` -> `:wq`
+- Restart web container in your terminal: `docker restart magento2-devbox-web`
