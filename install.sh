@@ -1,5 +1,60 @@
 #!/bin/bash
 
+request () {
+    local varName=$1
+    local question=$2
+    local isBoolean=$3
+    local defaultValue=$4
+    local defaultString
+    local value
+    local output
+
+    if [ $isBoolean = 1 ]; then
+        if [ $defaultValue = 1 ]; then
+            defaultString="Y/n"
+        else
+            defaultString="y/N"
+        fi
+    else
+        defaultString="default: $defaultValue"
+    fi
+
+    read -p "$question [$defaultString]: " value #prompt value
+    value=$(echo $value | xargs) #trim input
+
+    if [ ${#value} -gt 0 ]; then
+        if [ $isBoolean = 1 ]; then
+            if echo $value | grep -Eiq "^(?:[1y]|yes|true)$"; then
+                value=1
+                output="yes"
+            else
+                value=0
+                output="no"
+            fi
+        else
+            output=$value
+        fi
+    else
+        if [ $isBoolean = 1 ]; then
+            if [ $defaultValue = 1 ]; then
+                value=1
+                output="yes"
+            else
+                value=0
+                output="no"
+            fi
+        else
+            value=$defaultValue
+            output=$value
+        fi
+    fi
+
+    eval "$varName=$value"
+    echo $output
+}
+
+#request "b" "Do you want to install rabbit?" 0 1
+
 echo 'Creating docker-compose config'
 
 read -p 'Do you wish to install RabbitMQ (y/N): ' install_rabbitmq
