@@ -74,12 +74,12 @@ read -p 'Do you wish to setup Redis as default cache for all types (except Full 
 read -p 'For Full Page cache do you wish to setup Redis (r) or Varnish (v) or use default file system storage (any key) (r/v/anykey): ' cache_adapter
 
 # ternary operator
-[[ $cache_adapter = 'v' ]] && install_varnish='y' || install_varnish='n'
+[[ $cache_adapter = 'v' ]] && install_varnish=1 || install_varnish=0
 [[ $cache_adapter = 'r' ]] && redis_cache=1 || redis_cache=0
-([[ $cache_adapter = 'r' ]] || [[ $redis_session = 'y' ]] || [[ $redis_all_cache = 'y' ]]) && install_redis='y' || install_redis='n'
+([[ $cache_adapter = 'r' ]] || [[ $redis_session = 'y' ]] || [[ $redis_all_cache = 'y' ]]) && install_redis=1 || install_redis=0
 
 redis_host='redis'
-if [[ $install_redis = 'y' ]]
+if [[ $install_redis = 1 ]]
     then
         cat << EOM >> docker-compose.yml
   $redis_host:
@@ -90,7 +90,7 @@ fi
 
 web_port=1748
 varnish_host_container=magento2-devbox-varnish
-if [[ $install_varnish = 'y' ]]
+if [[ $install_varnish = 1 ]]
     then
         cat << EOM >> docker-compose.yml
   varnish:
@@ -108,7 +108,8 @@ main_host_port=80
 main_host_container=magento2-devbox-web
 cat << EOM >> docker-compose.yml
   $main_host:
-    image: magento/magento2devbox_web:latest
+    # image: magento/magento2devbox_web:latest
+    build: web
     container_name: $main_host_container
     volumes:
       - $webroot_path:$magento_path
@@ -138,14 +139,14 @@ docker exec -it --privileged -u magento2 magento2-devbox-web /bin/sh -c 'cd /hom
 docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:download --use-existing-sources=$use_existing_sources
 docker exec -it --privileged -u magento2 magento2-devbox-web php -f /home/magento2/scripts/devbox magento:setup --use-existing-sources=$use_existing_sources --rabbitmq-install=$install_rabbitmq --rabbitmq-host=$rabit_host --rabbitmq-port=$rabbit_port
 
-if [[ $install_redis ]]
+if [[ $install_redis = 1 ]]
     then docker exec -it --privileged -u magento2 magento2-devbox-web \
         php -f /home/magento2/scripts/devbox magento:setup:redis \
             --as-all-cache=$redis_all_cache --as-cache=$redis_cache \
             --as-session=$redis_session --host=$redis_host --magento-path=$magento_path
 fi
 
-if [[ $install_varnish ]]
+if [[ $install_varnish = 1 ]]
     then
         varnish_file=/home/magento2/scripts/default.vcl
         docker exec -it --privileged -u magento2 magento2-devbox-web \
