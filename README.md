@@ -9,6 +9,11 @@ Run PowerShell as administrator and give permission to run scripts with command:
 2. Run `& ".\install.ps1"` in PowerShell - during command execution you will be asked for your magento repo credentials
 3. Open in browser http://localhost:1748/
 
+## Configuring PhpStorm
+:information_source: We suggest to make magento2-dev-box directory as your project directory in PhpStorm
+
+If you want to configure PhpStorm automatically, run `configure_php_storm` script. It will set up remote PHP interpreter.
+
 ## Debug your PHP in Docker with Intellij/PHPStorm and Xdebug
 1. Create new server to PhpStorm Servers:
    - Name: {{your server name}}
@@ -46,12 +51,12 @@ To compile CSS out of LESS via Grunt you need:
  
 2. Go to Languages & Frameworks > PHP:
  - Interpreter: Remote PHP 7
- - Path mapping: ../magento2-dev-box/shared/webroot -> /var/www/magento2 <br/>
+ - Path mapping: magento2-dev-box/shared/webroot -> /var/www/magento2 <br/>
    :information_source: If your Magento is installed not in default location (/magento2-dev-box/shared/webroot) enter your custom location here.
  
 3. Go to Languages & Frameworks > PHP > PHPUnit and click +:
  - Interpreter: Remote PHP 7
- - Path mappings: ../magento2-dev-box/shared/webroot -> /var/www/magento2
+ - Path mappings: magento2-dev-box/shared/webroot -> /var/www/magento2
  - PHPUnit Library: Use Composer autoloader
  - Path to script: /var/www/magento2/vendor/autoload.php
  

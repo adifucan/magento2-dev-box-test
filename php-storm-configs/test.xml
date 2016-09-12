@@ -1,0 +1,9 @@
+<application>
+    <component name="PhpInterpreters">
+        <interpreters>
+            <interpreter home="ssh://magento2@127.0.0.1:2222/usr/local/bin/php" id="php-interpreter-magento2-dev-box" name="Remote PHP Magento2 Dev Box" debugger_id="php.debugger.XDebug">
+                <remote_data HOST="127.0.0.1" PORT="2222" ANONYMOUS="false" USERNAME="magento2" PASSWORD="" PRIVATE_KEY_FILE="" MY_KNOWN_HOSTS_FILE="" PASSPHRASE="" USE_KEY_PAIR="false" INTERPRETER_PATH="/usr/local/bin/php" HELPERS_PATH="/home/magento2/.phpstorm_helpers" INITIALIZED="false" VALID="true" />
+            </interpreter>
+        </interpreters>
+    </component>
+</application>
