@@ -77,6 +77,9 @@ class MagentoDownload extends AbstractCommand
      */
     private function installFromCloud(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->commandExist('magento-cloud')) {
+            $this->executeCommands('php /home/magento2/installer', $output);
+        }
         $this->executeCommands('magento-cloud', $output);
 
         if ($this->requestOption('cloud-use-existing-key', $input, $output)) {
@@ -86,10 +89,21 @@ class MagentoDownload extends AbstractCommand
                 if ($this->requestOption('cloud-try-different-key', $input, $output, true)) {
                     $keyName = $this->requestOption('cloud-key-name', $input, $output, true);
                 } else {
-                    throw new \Exception(
-                        'You selected to init project from the Magento Cloud,'
-                        . ' but SSH key for the Cloud is missing. Start from the beginning.'
-                    );
+                    if ($this->requestOption('cloud-create-new-key', $input, $output)) {
+                        $keyName = $this->requestOption(
+                            'cloud-key-name',
+                            $input,
+                            $output,
+                            true,
+                            'New key will be created. Enter the name of the SSH key'
+                        );
+                        $this->executeCommands(sprintf('ssh-keygen -t rsa -N "" -f /home/magento2/.ssh/%s', $keyName), $output);
+                    } else {
+                        throw new \Exception(
+                            'You selected to init project from the Magento Cloud,'
+                            . ' but SSH key for the Cloud is missing. Start from the beginning.'
+                        );
+                    }
                 }
             }
         } else {
@@ -110,9 +124,11 @@ class MagentoDownload extends AbstractCommand
             $this->executeCommands(sprintf('magento-cloud ssh-key:add /home/magento2/.ssh/%s.pub', $keyName), $output);
         }
 
+        $verifySSHCommand = 'ssh -q -o "BatchMode=yes" idymogyzqpche-master-7rqtwti@ssh.us.magentosite.cloud "echo 2>&1"'
+            . ' && echo $host SSH_OK || echo $host SSH_NOK';
+        $this->executeCommands($verifySSHCommand, $output);
         $result = shell_exec(
-            'ssh -q -o "BatchMode=yes" idymogyzqpche-master-7rqtwti@ssh.us.magentosite.cloud "echo 2>&1"'
-                . ' && echo $host SSH_OK || echo $host SSH_NOK'
+            $verifySSHCommand
         );
 
         if (trim($result) == 'SSH_OK') {
@@ -212,6 +228,12 @@ class MagentoDownload extends AbstractCommand
                 'default' => true,
                 'description' => 'Whether to use existing SSH key for Magento Cloud.',
                 'question' => 'Do you want to use existing SSH key? %default%'
+            ],
+            'cloud-create-new-key' => [
+                'boolean' => true,
+                'default' => true,
+                'description' => 'Do you want to create new SSH key?',
+                'question' => 'Do you want to create new SSH key? %default%'
             ],
             'cloud-key-name' => [
                 'default' => 'id_rsa',

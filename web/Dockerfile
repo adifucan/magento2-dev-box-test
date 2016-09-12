@@ -1,8 +1,7 @@
 FROM php:7.0.10-fpm
 MAINTAINER "Oleksandr Iegorov <oiegorov@magento.com>"
 
-RUN adduser --disabled-password --gecos "" magento2 \
-    && apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     apt-utils \
     cron \
     curl \
@@ -34,7 +33,6 @@ RUN adduser --disabled-password --gecos "" magento2 \
     && npm update -g npm && npm install -g grunt-cli && npm install -g gulp \
     && docker-php-ext-install bcmath \
     && echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config \
-    && passwd -d magento2 \
     && echo "[magento2]" >> /usr/local/etc/php-fpm.d/docker.conf \
     && echo "access.log = /proc/self/fd/2" >> /usr/local/etc/php-fpm.d/docker.conf \
     && echo "clear_env = no" >> /usr/local/etc/php-fpm.d/docker.conf \
@@ -44,24 +42,34 @@ RUN adduser --disabled-password --gecos "" magento2 \
     && a2enmod proxy \
     && a2enmod proxy_fcgi \
     && rm -f /etc/apache2/sites-enabled/000-default.conf \
-    && chown -R magento2:magento2 /home/magento2 \
-    && curl -sS https://accounts.magento.cloud/cli/installer | php
+    && useradd magento2 \
+    && mkdir /home/magento2 && chown magento2:magento2 /home/magento2 \
+    && cd /home/magento2 && curl -sS https://accounts.magento.cloud/cli/installer >> installer
 
 # PHP config
-ADD php.ini /usr/local/etc/php
+ADD conf/php.ini /usr/local/etc/php
 
 # SSH config
-ADD sshd_config /etc/ssh/sshd_config
-ADD supervisord.conf /etc/supervisord.conf
+ADD conf/sshd_config /etc/ssh/sshd_config
 
-ADD magento2.conf /usr/local/etc/php-fpm.d/magento2.conf
-ADD default.conf /etc/apache2/sites-enabled/default.conf
+# supervisord config
+ADD conf/supervisord.conf /etc/supervisord.conf
+
+# php-fpm config
+ADD conf/php-fpm-magento2.conf /usr/local/etc/php-fpm.d/php-fpm-magento2.conf
+
+# apache config
+ADD conf/apache-default.conf /etc/apache2/sites-enabled/apache-default.conf
+
+ENV PATH /home/magento2/scripts/:/home/magento2/.magento-cloud/bin:$PATH
 
 # Initial scripts
 COPY scripts/ /home/magento2/scripts/
-
-ENV PATH /root/.magento-cloud/bin:$PATH
-WORKDIR  /home/magento2
+RUN cd /home/magento2/scripts && composer install
 
 EXPOSE 80 22 44100
+WORKDIR /home/magento2
+
+USER root
+
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
