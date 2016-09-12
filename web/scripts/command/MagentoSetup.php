@@ -86,6 +86,8 @@ class MagentoSetup extends AbstractCommand
                 );
             }
         }
+
+        $output->writeln('To prepare magento sources run <info>MagentoPrepare</info> command next');
     }
 
     /**
@@ -115,7 +117,7 @@ class MagentoSetup extends AbstractCommand
             ],
             'admin-password' => [
                 'initial' => true,
-                'default' => '123123q',
+                'default' => 'admin123',
                 'description' => 'Admin password.',
                 'question' => 'Please enter backend admin password %default%'
             ],

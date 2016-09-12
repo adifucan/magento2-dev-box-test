@@ -79,6 +79,8 @@ class MagentoPrepare extends AbstractCommand
             '/var/www/magento2/dev/tests/integration/etc/install-config-mysql.travis.php.dist',
             '/var/www/magento2/dev/tests/integration/etc/install-config-mysql.travis.php'
         );
+
+        $output->writeln('To open magento go to <info>http://localhost:1748</info> Admin area: <info>http://localhost:1748/admin</info>, login: <info>admin</info>, password: <info>admin123</info>');
     }
 
     /**
