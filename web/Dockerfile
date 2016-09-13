@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y \
     && rm -f /etc/apache2/sites-enabled/000-default.conf \
     && useradd magento2 \
     && mkdir /home/magento2 && chown magento2:magento2 /home/magento2 \
-    && cd /home/magento2 && curl -sS https://accounts.magento.cloud/cli/installer >> installer
+    # && cd /home/magento2 && curl -sS https://accounts.magento.cloud/cli/installer >> installer
 
 # PHP config
 ADD conf/php.ini /usr/local/etc/php
