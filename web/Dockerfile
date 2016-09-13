@@ -43,7 +43,7 @@ RUN apt-get update && apt-get install -y \
     && a2enmod proxy_fcgi \
     && rm -f /etc/apache2/sites-enabled/000-default.conf \
     && useradd magento2 \
-    && mkdir /home/magento2 && chown magento2:magento2 /home/magento2 \
+    && mkdir /home/magento2 && chown magento2:magento2 /home/magento2
     # && cd /home/magento2 && curl -sS https://accounts.magento.cloud/cli/installer >> installer
 
 # PHP config
