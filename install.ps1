@@ -56,7 +56,7 @@ services:
         - %%%DB_PATH%%%:/var/lib/mysql
   %%%MAIN_HOST%%%:
     container_name: %%%MAIN_HOST_CONTAINER%%%
-    image: magento/magento2devbox_web:latest
+    image: magento/magento2devbox-web:latest
     volumes:
         - %%%WEBROOT_PATH%%%:%%%MAGENTO_PATH%%%
         - %%%COMPOSER_PATH%%%:/home/magento2/.composer
@@ -105,7 +105,7 @@ if ($install_varnish -eq 'y') {
 $yml += @"
 
   varnish:
-    image: magento/magento2devbox_varnish:latest
+    image: magento/magento2devbox-varnish:latest
     container_name: %%%VARNISH_HOST_CONTAINER%%%
     ports:
       - "1748:6081"

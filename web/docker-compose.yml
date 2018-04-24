@@ -26,14 +26,14 @@ services:
     container_name: magento2-devbox-redis
     image: redis:3.0.7
   varnish:
-    image: magento/magento2devbox_varnish:latest
+    image: magento/magento2devbox-varnish:latest
     container_name: magento2-devbox-varnish
     links:
       - web:web
     ports:
       - "1748:6081"
   web:
-    image: magento/magento2devbox_web:latest
+    image: magento/magento2devbox-web:latest
     container_name: magento2-devbox-web
     volumes:
       - ./shared/webroot:/var/www/magento2
